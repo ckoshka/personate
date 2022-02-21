@@ -23,7 +23,7 @@ class HistoryPrompt(Prompt):
 
         self.lines = [
             "<DM> You wake up, nauseated, head resting against a display case, and groan loudly. You don't remember what happened last night, but it involved a museum curator and a large supply of absinthe. Immediately, you see something written on your palm."
-            f"<{username}> read it \n(The manual: "At the beginning of the story, the protagonist is in a museum. On their palm is written the message 'The Butler didn't it'") \n <DM> You read the hastily-jotted scrawl, and find that it says: \"The Butler didn't it.\" It's in your handwriting."
+            f"<{username}> read it \n(The manual: \"At the beginning of the story, the protagonist is in a museum. On their palm is written the message 'The Butler didn't it'\") \n <DM> You read the hastily-jotted scrawl, and find that it says: \"The Butler didn't it.\" It's in your handwriting."
         ]
 
         # This does something very important: it establishes a consistent 
@@ -144,3 +144,8 @@ async def main():
         dm_response = await prompt.get_response_for_action(user_action)
         print("<DM> " + dm_response)
     db.save_progress()
+
+
+
+
+
