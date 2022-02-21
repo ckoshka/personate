@@ -1,10 +1,9 @@
 from completions.interpret import interpret
 
-# This interprets the results of fictional code examples
-
 @interpret(stops=["\n", '"'], max=20, temp=0)
-async def multiply(x: int, y: int) -> None:
-    """def multiply(x: int, y: int) -> int:
+async def multiply(x: int, y: int) -> str:
+    return f"""
+    def multiply(x: int, y: int) -> int:
         return x * y
     >> multiply(3, 12)
     # Returns "36"
@@ -44,9 +43,10 @@ async def run():
     q = await question("It's 42.")
     print(q) 
     # Output: How old is the donkey in Alice in Wonderland?
-    # Which is uhhhh, an interesting response?
+    
     q = await name_generator(kwargs='nationality="Singaporean", script="Latin", rareness="common"') 
     print(q)
+    
     # Output: ['Joh Jae Lin', 'James Yi Jin Hao', 'Lee Kian Ham', 'Akira Sugiura', "Hendrie Choo', 'Liew Sien', 'Yeow Doo Hong", 'Brice P. Chia', 'Ma Siang Heng', 'Chua Wai Mun', 'Boon Soo Koh', 'Toh Chin Chye']
     q = await answer_anything(question="Why did the French Revolution occur?", kwargs="minimum_length=250, rank_by='upvotes', moderator_curated=True")
     print(q)
@@ -74,6 +74,7 @@ async def run():
     # from France's 1789 revolution also inspired leaders around the
     # world. The 1789 revolution began France's political
     # transformation from an absolutist monarchy to a republic.
+    
     q = await multiply(4, 4)
     print(q)
     # Output: 16
