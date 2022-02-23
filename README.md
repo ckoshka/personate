@@ -1,5 +1,5 @@
-![personate](https://user-images.githubusercontent.com/48640397/154764793-154a3c99-6439-43b6-9d7e-09b8b2baf8aa.png | width=400)
-![3-ais-in-a-trenchcoat](https://user-images.githubusercontent.com/48640397/154828805-160b7770-9460-43af-8e42-bf52af5fb08c.png | width=400)
+<img src="https://user-images.githubusercontent.com/48640397/154764793-154a3c99-6439-43b6-9d7e-09b8b2baf8aa.png" alt="drawing" width="50%"/>
+<img src="https://user-images.githubusercontent.com/48640397/154828805-160b7770-9460-43af-8e42-bf52af5fb08c.png" alt="drawing" width="50%"/>
 
 **Things you can do with this library include:**
 * Create a personification of the Zig programming language that answers questions about itself based off its English manual ... in Mongolian
