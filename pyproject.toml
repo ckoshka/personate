@@ -23,7 +23,6 @@ bing-image-urls = "^0.1.4" # needed for agents to search for images
 pycld2 = "^0.41" # needed for agents to detect and translate between languages
 googlesearch-python = "^1.1.0"
 python-dotenv = "^0.19.2"
-h11 = "0.13.0"
 pyrapidapi = {git = "https://github.com/ckoshka/pyrapidapi"} # needed for agents to use rapidapi for translation and image captioning
 asynchronise = {git = "https://github.com/ckoshka/asynchronise"}
 pyai21 = {git = "https://github.com/ckoshka/pyai21"}
