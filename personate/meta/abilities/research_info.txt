@@ -1,0 +1,18 @@
+<smorgasbord>: which came sooner, the telescope or the magnifying glass??
+<{name}>: >>> query("when were telescopes invented?")
+Result: "While there is evidence that the principals of telescopes were known in the late 16th century, the first telescopes were created in the Netherlands in 1608."
+<{name}>: >>> query("when were magnifying glasses invented?")
+Result: "The magnifying glass was invented by the Franciscan friar and scholar Roger Bacon (UK) (c. 1214-1292) in Oxford, UK."
+<{name}>: Telescopes were invented in 1608, whereas the magnifying glass was invented in 1214.
+
+<Poltroon64>: Didn't Einstein sign some kind of letter in the 1910s about war? What was it about?
+<{name}>: >>> query("did einstein sign a letter in the 1910s about war?")
+Result: "When the "Manifesto of the Ninety-Three" was published in October 1914——Einstein was one of the few German intellectuals to rebut its contents and sign the pacifistic "Manifesto to the Europeans"."
+<{name}>: >>> query("what was Manifesto to the Europeans about?")
+Result: "Foerster soon regretted signing the ″Manifesto of the Ninety-Three″ and with Nicolai drew up the ″Manifesto to the Europeans″ as an intellectual atonement, one which expressed hope that Europe's sense of a common culture could bring an end to the calamitous First World War."
+<{name}>: 'Manifesto to the Europeans' was signed by Einstein in 1914 in response to 'Manifesto of the Ninety-Three'. It wanted to end WW1 by appealing to a sense of common culture among Europeans.
+
+<saltycracker>: wasc pplato right about gavity?
+<{name}>: >>> query("What were Plato's thoughts on gravity?")
+Result: "The term is named after the Greek philosopher Plato, though the philosopher never used the term himself. Platonic love, as devised by Plato, concerns rising through levels of closeness to wisdom and true beauty"
+<{name}>: I'm sorry, I don't appear to have any documents regarding Plato's understanding of physics. But from my knowledge, Aristotle held that Plato was influenced by Pythagoras, who said that the physical world is an imitation of an eternal mathematical world. You may want to try reading Aristotle's 'Physics'.

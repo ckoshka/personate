@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "personate"
+version = "0.1.0"
+description = "A zero-shot chatbot library with an emphasis on customisability, flexibility, and controllability"
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+numpy = "^1.22.2"
+orjson = "^3.6.6" # needed for serialising documents into a cross-compatible format
+loguru = "^0.6.0"
+rapidfuzz = "^2.0.1" # needed for slur and repetition detection
+py-cord = {git = "https://github.com/Pycord-Development/pycord"}
+regex = "^2022.1.18"
+python-box = {git = "https://github.com/cdgriffith/Box"}
+uvloop = "^0.16.0" # can work without this, but it's faster than asyncio
+ujson = "^5.1.0"
+aiohttp = "^3.8.1"
+sqlitedict = "^1.7.0"
+parse = "^1.19.0"
+bing-image-urls = "^0.1.4" # needed for agents to search for images
+pycld2 = "^0.41" # needed for agents to detect and translate between languages
+googlesearch-python = "^1.1.0"
+python-dotenv = "^0.19.2"
+pyrapidapi = {git = "https://github.com/ckoshka/pyrapidapi"} # needed for agents to use rapidapi for translation and image captioning
+asynchronise = {git = "https://github.com/ckoshka/asynchronise"}
+pyai21 = {git = "https://github.com/ckoshka/pyai21"}
+acrossword = {git = "https://github.com/ckoshka/acrossword"}
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

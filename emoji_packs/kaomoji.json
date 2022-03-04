@@ -1,0 +1,54 @@
+{
+    "excited or joy": [
+        "(\u2606\u25bd\u2606)",
+        "(\u2312\u25bd\u2312)\u2606",
+        "(\uffe3\u03c9\uffe3)",
+        "(\u2312\u203f\u2312)",
+        "(\u0e51\u02c3\u1d17\u02c2)\ufeed"
+    ],
+    "loving": [
+        "(\u2312\u25bd\u2312)\u2661",
+        "\u2661\uff3c(\uffe3\u25bd\uffe3)\uff0f\u2661 "
+    ],
+    "embarrassed": [
+        "(\u2044 \u2044>\u2044 \u25bd \u2044<\u2044 \u2044)   ",
+        "(\uffe3\u25bd\uffe3*)\u309e"
+    ],
+    "dissatisfied": [
+        "(\uffe3\ufe3f\uffe3)",
+        "(\ub208_\ub208)"
+    ],
+    "sad": [
+        "\uff61\uff9f\uff65 (>\ufe4f<) \uff65\uff9f\uff61 ",
+        "(\u0ca5\ufe4f\u0ca5)"
+    ],
+    "indifferent bored": [
+        "\u30fd(\uffe3\uff5e\uffe3\u3000)\u30ce",
+        "\u2510(\ufe36\u25bd\ufe36)\u250c"
+    ],
+    "confused": [
+        "(\uff20_\uff20)",
+        "(\u3003\uffe3\u03c9\uffe3\u3003\u309e"
+    ],
+    "surprised": [
+        "(O_O;)",
+        "(\u2299_\u2299)"
+    ],
+    "greeting or hello": [
+        "(\uffe3\u25bd\uffe3)\u30ce",
+        "(\u2312\u03c9\u2312)\uff89",
+        "(\u2267\u25bd\u2266)\/"
+    ],
+    "This is a neutral sentence.": [
+        ""
+    ],
+    "This is a factual sentence": [
+        ""
+    ],
+    "This sentence doesn't express any particular emotion.": [
+        ""
+    ],
+    "confused \/ thinking": [
+        "<:pithink:652247559909277706>"
+    ]
+}

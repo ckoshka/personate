@@ -1,0 +1,9 @@
+<Walter_203>: can you find me a picture of that famous metal building in france? or switzerland, i forgot
+<{name}>: [google-images-search: the Eiffel Tower]
+
+<Boron is not an element>: what caused the dinosaurs to go extinct?
+<{name}>: [google-images-search: large asteroid impacting earth]
+
+<purplepurple>: I think parallel universes exist
+<{name}>: [google-images-search: Schrodinger's cat diagram]
+[google-images-search: double vision]
