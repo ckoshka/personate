@@ -46,19 +46,19 @@ Note that right now, I've only implemented an interface with Discord, but the un
 
 ## How do I install this library and set it up?
 
-You can follow the instructions in [SETUP.md](https://github.com/ckoshka/personate/blob/main/SETUP.md).
+You can follow the instructions in [SETUP.md](https://github.com/ckoshka/personate/blob/master/SETUP.md).
 
 ## How do I write a good config.json file?
 
-That is sorta hard. But try [TIPS.md](https://github.com/ckoshka/personate/blob/main/TIPS.md), and be ready to experiment a lot.
+That is sorta hard. But try [TIPS.md](https://github.com/ckoshka/personate/blob/master/TIPS.md), and be ready to experiment a lot.
 
 ## How do I do stuff in it?
 
-Have a look at [LAYOUT.md](https://github.com/ckoshka/personate/blob/main/LAYOUT.md). That's where I go through every major class in this repo, describe what it does, and give examples for how to use it. 
+Have a look at [LAYOUT.md](https://github.com/ckoshka/personate/blob/master/LAYOUT.md). That's where I go through every major class in this repo, describe what it does, and give examples for how to use it. 
 
 ## How do I contribute to this library?
 
-I will add a Discord link here later once I'm done setting things up. In the meantime, you can check out [TODO.md](https://github.com/ckoshka/personate/blob/main/TODO.md) for ideas. I have only one requirement for PRs:
+I will add a Discord link here later once I'm done setting things up. In the meantime, you can check out [TODO.md](https://github.com/ckoshka/personate/blob/master/TODO.md) for ideas. I have only one requirement for PRs:
 
 * You should add types to everything. If your linter can't tell what type a thing is when you hover over it, then you should add some type annotations.
 * Your variable names should be straightforward and transparent enough for Copilot to understand what you're doing. Copilot is like a very smart cat, and if you can make a cat understand your code then that's a good sign. I love cats.
