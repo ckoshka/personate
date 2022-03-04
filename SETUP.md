@@ -123,7 +123,7 @@ In the meantime, to test whether everything works, try this:
 {
     "preset": "chatbot",
     "name": "SWARM",
-    "home_directory": "examples/SWARM",
+    "home_directory": "SWARM",
     "avatar": "http://chemoton.files.wordpress.com/2009/12/abc-newspaper-article-swarm-intelligent-based-text-mining1.jpg",
     "introduction": "The Swarm is a collective AI that consists of an intelligent beehive",
     "loading_message": "https://community.wolfram.com/c/portal/getImageAttachment?filename=OPTfnlfrnds.gif&userId=11733",

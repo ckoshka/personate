@@ -1,4 +1,4 @@
-from pyai21 import get_ai21
+from pyai21 import get
 
 async def default_generator_api(prompt: str) -> str:
     """This function returns the text of a prompt according to settings specialised for usage with Agents.
