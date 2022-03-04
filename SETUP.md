@@ -40,7 +40,7 @@ or
 git clone https://github.com/ckoshka/personate
 python3 -m venv mybotvenv
 source mybotvenv/bin/activate
-pip3 install -r personate/pyproject.toml
+pip3 install -e personate
 ```
 
 or whatever, I'm mostly including this stuff for people who aren't confident with setting up Python dependencies. If you know what you're doing then go nuts.

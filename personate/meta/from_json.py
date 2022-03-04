@@ -4,7 +4,7 @@ from urllib.parse import quote_plus
 
 import ujson as json
 from acrossword import Document
-from personate.personate.completions import default_generator_api
+from personate.completions import default_generator_api
 from personate.utils.logger import logger
 from personate.utils.username_generator import username_generator
 

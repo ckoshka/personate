@@ -15,7 +15,7 @@ from typing import (
 
 import discord
 from acrossword import Document, DocumentCollection
-from personate.personate.completions import default_generator_api
+from personate.completions import default_generator_api
 from personate.decos.filter import Filter, DefaultFilter
 from personate.decos.translators.translator import EmptyTranslator, Translator
 from personate.memory.memory import Memory
