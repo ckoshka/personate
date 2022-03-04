@@ -10,38 +10,15 @@ Setting up this library from scratch will probably take you a good half-hour, mo
 
 # Setup
 
-## 1. Install poetry 📜
-
-Go to your console and type in "poetry" to check if you've already got it. Otherwise, do this:
-
-### On OSX:
+## 1. Install this repo and its dependencies 🛠️
 ```bash
-$ brew install poetry
-```
-### On Linux:
-```bash
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-```
-### On Windows:
-I have no goddamn idea. You're on your own here.
-
----
-
-## 2. Install this repo and its dependencies 🛠️
-```bash
-poetry init
-poetry shell
-poetry add git+https://github.com/ckoshka/personate
-``` 
-
-or
-
-```bash
-git clone https://github.com/ckoshka/personate
 python3 -m venv mybotvenv
 source mybotvenv/bin/activate
-pip3 install -e personate
+pip3 install git+https://github.com/ckoshka/personate
+pip3 install -U h11
 ```
+
+The last one is because H11 introduced some breaking change and it screws everything up otherwise.
 
 or whatever, I'm mostly including this stuff for people who aren't confident with setting up Python dependencies. If you know what you're doing then go nuts.
 
