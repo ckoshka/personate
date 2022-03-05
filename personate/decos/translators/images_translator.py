@@ -95,13 +95,17 @@ class ImageToTextTranslator(Translator):
         self.domain_url = domain_url
         self.translators.append(self.convert_image_to_text)
 
-    async def convert_image_to_text(self, original_user_message: discord.Message, processed_user_message: InternalMessage):
+    async def convert_image_to_text(
+        self,
+        original_user_message: discord.Message,
+        processed_user_message: InternalMessage,
+    ):
         images = [file for file in original_user_message.attachments]
         if not images:
             return
         descriptions = [await get_description_for_image(image.url) for image in images]
         # Add captions in the same format as the original message i.e [image: description]
-        descriptions = '\n'.join(
+        descriptions = "\n".join(
             [f"[image: {description}]" for description in descriptions]
         )
         processed_user_message.internal_content = descriptions

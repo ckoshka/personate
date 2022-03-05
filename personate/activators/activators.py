@@ -1,6 +1,16 @@
 from ast import FunctionType
 from types import AsyncGeneratorType, CoroutineType, GeneratorType
-from typing import AsyncGenerator, List, Dict, Callable, Coroutine, Generator, Any, Optional, Tuple
+from typing import (
+    AsyncGenerator,
+    List,
+    Dict,
+    Callable,
+    Coroutine,
+    Generator,
+    Any,
+    Optional,
+    Tuple,
+)
 import discord
 from acrossword import Ranker
 import random
@@ -11,8 +21,9 @@ import inspect
 from inspect import signature, Parameter
 import rapidfuzz
 
-#We'll turn the logging off for this module by default
+# We'll turn the logging off for this module by default
 logger.disable(__name__)
+
 
 def get_arg_by_name(name: str, args: Tuple[Any], func: Callable) -> Optional[Any]:
     """Get the index of the argument in the function signature that matches the name provided"""
@@ -21,6 +32,7 @@ def get_arg_by_name(name: str, args: Tuple[Any], func: Callable) -> Optional[Any
         if param.name == name:
             return args[i]
     return None
+
 
 class Activator:
     """
@@ -157,9 +169,12 @@ class Activator:
         else:
             self.optional_checks.append(checker)
 
-    async def meets_all_conditions(self, func: Callable, result: Any, direction: str) -> bool:
+    async def meets_all_conditions(
+        self, func: Callable, result: Any, direction: str
+    ) -> bool:
         async def always_return_true(*args, **kwargs):
             return True
+
         ors = [
             f(result)
             for f in self.optional_checks
@@ -190,7 +205,7 @@ class Activator:
         logger.debug(
             f"The function: '{func.__name__}'. Does it meet the 'or' conditions? {meets_or_conditions}. Does it meet the 'and' conditions? {meets_inbuilt_and_conditions}"
         )
-        if (meets_or_conditions and meets_inbuilt_and_conditions):
+        if meets_or_conditions and meets_inbuilt_and_conditions:
             logger.debug("I decided that the conditions were met.")
             return True
         else:
@@ -298,7 +313,9 @@ class Activator:
                 else:
                     return None
             else:
-                logger.debug(f"{func.__name__} is not a coroutine. I'm going to run it synchronously. Was it called with apply_to_inputs? {apply_to_inputs}. Was it called with kwargs? {kwargs}. Was a keyword provided? {keyword}")
+                logger.debug(
+                    f"{func.__name__} is not a coroutine. I'm going to run it synchronously. Was it called with apply_to_inputs? {apply_to_inputs}. Was it called with kwargs? {kwargs}. Was a keyword provided? {keyword}"
+                )
             result = func(*args, **kwargs)
             if apply_to_outputs:
                 if await self.meets_all_conditions(func, result, applied_to):
@@ -319,6 +336,7 @@ class Activator:
             return awaitable_inner
         else:
             return sync_inner
+
     @classmethod
     def check_once(
         cls,

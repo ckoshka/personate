@@ -14,13 +14,7 @@ import importlib.resources
 
 class AgentFromJSON:
     available_presets = set(
-        [
-            "chatbot",
-            "entity",
-            "fictional_character",
-            "historical_person",
-            "assistant"
-        ]
+        ["chatbot", "entity", "fictional_character", "historical_person", "assistant"]
     )
 
     available_preprocessors = ["translate", "images-to-text"]
@@ -39,7 +33,9 @@ class AgentFromJSON:
         reads = data.get("reads", False)
         debug = data.get("debug", False)
         preset = data.get("preset", None)
-        logger.debug(f"Initialising agent from json with {name}, {token}, {reads}, {debug}, {preset}")
+        logger.debug(
+            f"Initialising agent from json with {name}, {token}, {reads}, {debug}, {preset}"
+        )
 
         none_errors = {
             "You need to specify a name for your agent. If you can't think of one, use a nondescript name then allow it to choose for itself.": name,
@@ -57,6 +53,7 @@ class AgentFromJSON:
         if not os.path.exists(home_dir):
             os.mkdir(home_dir)
         logger.debug(f"Using home directory {home_dir}")
+
         agent = Agent(
             name=name,
             token=token,
@@ -82,16 +79,24 @@ class AgentFromJSON:
             authors = data.get("authors", None)
 
             if authors:
-                template["introduction"] = template["introduction"].replace("{authors}", authors)
+                template["introduction"] = template["introduction"].replace(
+                    "{authors}", authors
+                )
             else:
-                template["introduction"] = template["introduction"].replace("{authors}", "experts")
+                template["introduction"] = template["introduction"].replace(
+                    "{authors}", "experts"
+                )
             logger.debug(f"Using authors {authors}")
 
             introduction = data.get("introduction", None)
             if not introduction and "{introduction}" in template["introduction"]:
-                raise ValueError("You need to introduce your agent. Have a look at the example template.")
+                raise ValueError(
+                    "You need to introduce your agent. Have a look at the example template."
+                )
             if introduction:
-                template["introduction"] = template["introduction"].replace("{introduction}", introduction)
+                template["introduction"] = template["introduction"].replace(
+                    "{introduction}", introduction
+                )
 
             logger.debug(f"Using introduction {template['introduction']}")
 
@@ -101,11 +106,16 @@ class AgentFromJSON:
 
         db_path = data.get("db_path", home_dir + "/db.sqlite")
         agent.use_db(db_path)
-        logger.debug(f"Using db {db_path}") 
+        logger.debug(f"Using db {db_path}")
 
-        loading_message = data.get("loading_message", "https://i.pinimg.com/originals/f1/79/90/f179907b01caacdc35af6a0f27bc6616.gif")
+        loading_message = data.get(
+            "loading_message",
+            "https://i.pinimg.com/originals/f1/79/90/f179907b01caacdc35af6a0f27bc6616.gif",
+        )
         avatar = data.get("avatar", None)
-        agent.set_appearance(avatar_url=avatar, loading_message=loading_message, username=name)
+        agent.set_appearance(
+            avatar_url=avatar, loading_message=loading_message, username=name
+        )
         logger.debug(f"Using avatar {avatar}")
 
         activators = data.get("activators", [])
@@ -120,7 +130,9 @@ class AgentFromJSON:
 
         examples = data.get("examples", [])
         if not examples:
-            raise ValueError("You need to specify some examples to use for your agent to show how it should react and behave.")
+            raise ValueError(
+                "You need to specify some examples to use for your agent to show how it should react and behave."
+            )
         examples_str = ""
         for example in examples:
             if isinstance(example, str):
@@ -129,22 +141,31 @@ class AgentFromJSON:
                 if "user" in example.keys():
                     examples_str += f"<{username_generator()}>: {example['user']}\n"
                 else:
-                    custom_username = [name for name in example.keys() if name != "agent"]
+                    custom_username = [
+                        name for name in example.keys() if name != "agent"
+                    ]
                     if custom_username:
-                        examples_str += f"<{custom_username[0]}>: {example[custom_username[0]]}\n"
+                        examples_str += (
+                            f"<{custom_username[0]}>: {example[custom_username[0]]}\n"
+                        )
                 if "source" in example.keys():
                     examples_str += f"(Source: \"{example['source']}\")\n"
                 if "agent" in example.keys():
                     examples_str += f"<{name}>: {example['agent']}\n\n"
         agent.use_context_from(examples_str.split("\n\n"))
 
-        #if reading list, first check if the urllib-encoded urls already exist in a knowledge subdirectory
+        # if reading list, first check if the urllib-encoded urls already exist in a knowledge subdirectory
         knowledge_directory = data.get("knowledge_directory", home_dir + "/knowledge")
         reading_list = data.get("reading_list", [])
         for url in reading_list:
-            if os.path.exists(knowledge_directory + "/" + quote_plus(url) + '.json'):
-                agent.add_knowledge(filename=knowledge_directory + "/" + quote_plus(url) + '.json', pre_computed=True)
-                logger.debug(f'Using pre-computed knowledge {knowledge_directory + "/" + quote_plus(url) + ".json"}')
+            if os.path.exists(knowledge_directory + "/" + quote_plus(url) + ".json"):
+                agent.add_knowledge(
+                    filename=knowledge_directory + "/" + quote_plus(url) + ".json",
+                    pre_computed=True,
+                )
+                logger.debug(
+                    f'Using pre-computed knowledge {knowledge_directory + "/" + quote_plus(url) + ".json"}'
+                )
             else:
                 if "http" in url or "www" in url:
                     agent.add_knowledge(url, is_url=True)
@@ -156,17 +177,23 @@ class AgentFromJSON:
         content_warning_topics = data.get("content_warning_topics", 2)
         if isinstance(content_warning_topics, list):
             from personate.decos.translators.translator import CWTaggerTranslator
-            cw_tagger = CWTaggerTranslator(topics=content_warning_topics) 
+
+            cw_tagger = CWTaggerTranslator(topics=content_warning_topics)
             agent.add_post_translator(cw_tagger)
             logger.debug(f"Using content warning topics {content_warning_topics}")
 
-        preprocessor_list = set(data.get("preprocessors", [])) & set(cls.available_preprocessors)
-        post_processor_list = set(data.get("postprocessors", [])) & set(cls.available_postprocessors)
+        preprocessor_list = set(data.get("preprocessors", [])) & set(
+            cls.available_preprocessors
+        )
+        post_processor_list = set(data.get("postprocessors", [])) & set(
+            cls.available_postprocessors
+        )
         logger.debug(f"Using preprocessors {preprocessor_list}")
         logger.debug(f"Using postprocessors {post_processor_list}")
 
         if "translate" in preprocessor_list.union(post_processor_list):
             from personate.decos.translators.translator import LanguageTranslator
+
             translator = LanguageTranslator(default_language_code="en")
             if "translate" in preprocessor_list:
                 agent.add_pre_translator(translator)
@@ -175,15 +202,19 @@ class AgentFromJSON:
             logger.debug(f"Using language translator")
 
         if "text-to-images" in post_processor_list:
-            from personate.decos.translators.images_translator import \
-                TextToImageTranslator
+            from personate.decos.translators.images_translator import (
+                TextToImageTranslator,
+            )
+
             text_to_image_translator = TextToImageTranslator()
             agent.add_post_translator(text_to_image_translator)
             logger.debug(f"Using text-to-images translator")
 
         if "images-to-text" in preprocessor_list:
-            from personate.decos.translators.images_translator import \
-                ImageToTextTranslator
+            from personate.decos.translators.images_translator import (
+                ImageToTextTranslator,
+            )
+
             image_to_text_translator = ImageToTextTranslator()
             agent.add_pre_translator(image_to_text_translator)
             logger.debug(f"Using images-to-text translator")
@@ -191,7 +222,8 @@ class AgentFromJSON:
         emoji_file: str = data.get("emoji_file", None)
         emojis = data.get("emojis", dict())
         if emojis or emoji_file:
-            from personate.decos.translators.translator import EmojiTranslator 
+            from personate.decos.translators.translator import EmojiTranslator
+
             emoji_translator = EmojiTranslator(file=emoji_file, emojis=emojis)
             agent.add_post_translator(emoji_translator)
             logger.debug(f"Using emojis {emojis}")

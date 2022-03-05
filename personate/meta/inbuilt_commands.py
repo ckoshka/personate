@@ -3,8 +3,17 @@
 # TODO: Add items manually to contextual memory? By approving and de-approving responses, or selecting the best ones out of a group of 3? Via tick emoji.
 # able to bring together existing discord bot and the chatbot, e.g cogs, slash commands, etc.
 import asyncio
-from typing import (Any, Callable, Coroutine, Dict, Generator, List, Optional,
-                    Tuple, Union)
+from typing import (
+    Any,
+    Callable,
+    Coroutine,
+    Dict,
+    Generator,
+    List,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import discord
 import ujson as json
@@ -21,7 +30,10 @@ from personate.utils.username_generator import username_generator
 def to_list(item: str) -> List[str]:
     return item.split("\n")
 
-def make_agent_modifier(bot: discord.Bot, agent: Agent, agent_dir: str, guild_ids: List[int]) -> Cog:
+
+def make_agent_modifier(
+    bot: discord.Bot, agent: Agent, agent_dir: str, guild_ids: List[int]
+) -> Cog:
     class AgentModifier(Cog):
         def __init__(self, bot: discord.Bot, agent: Agent, agent_dir: str) -> None:
             self.bot: discord.Bot = bot
@@ -155,7 +167,9 @@ def make_agent_modifier(bot: discord.Bot, agent: Agent, agent_dir: str, guild_id
         @commands.command(guild_ids=guild_ids)
         @commands.is_owner()
         async def addgoal(self, ctx: discord.ApplicationContext, goal: str):
-            last_line = self.agent.prompt.frame.field_values["pre_conversation_annotation"]
+            last_line = self.agent.prompt.frame.field_values[
+                "pre_conversation_annotation"
+            ]
             if not isinstance(last_line, str):
                 return
             last_line = last_line.split("\n\n")[-1]

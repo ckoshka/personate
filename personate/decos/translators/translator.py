@@ -8,16 +8,18 @@ import discord
 from personate.swarm.internal_message import InternalMessage
 from acrossword import Ranker
 
-class Translator:
 
+class Translator:
     def __init__(self) -> None:
         self.translators: List[Union["Translator", Callable]] = []
-        #self.permitted_types: List[type] = []
+        # self.permitted_types: List[type] = []
 
     def add_translator(self, translator: Union[Callable, "Translator"]) -> None:
         self.translators.append(translator)
 
-    def retrieve_by_classname(self, classname: str) -> Union[None, Callable, "Translator"]:
+    def retrieve_by_classname(
+        self, classname: str
+    ) -> Union[None, Callable, "Translator"]:
         for translator in self.translators:
             if isinstance(translator, Translator):
                 if translator.__class__.__name__ == classname:
@@ -31,9 +33,11 @@ class Translator:
         for translator in self.translators:
             try:
                 logger.debug(
-                    "Name of function acting as translator: {}".format(translator.__name__)
+                    "Name of function acting as translator: {}".format(
+                        translator.__name__
+                    )
                 )
-                #logger.debug("Message before translation: {}".format(**kwargs))
+                # logger.debug("Message before translation: {}".format(**kwargs))
                 if isinstance(translator, Translator):
                     await translator.translate(**kwargs)
                 else:
@@ -47,26 +51,33 @@ class Translator:
 
     @classmethod
     def inputs(cls, **clskwargs) -> Callable:
-        '''Calls Translator.translate as a decorator'''
+        """Calls Translator.translate as a decorator"""
         instance = cls(**clskwargs)
+
         def wrapper(func: Callable) -> Callable:
             async def inner_wrapper(*args, **kwargs) -> Any:
                 kwargs = await instance.translate(**kwargs)
                 return await func(*args, **kwargs)
+
             return inner_wrapper
+
         return wrapper
 
     __name__ = "GenericBaseTranslator"
 
+
 class DiscordResponseTranslator(Translator):
     __name__ = "DiscordResponseTranslator"
+
     def __init__(self):
         super().__init__()
         self.translators.append(self.add_response_embed)
 
-    async def add_response_embed(self, agent_message: InternalMessage, user_message: discord.Message, **kwargs):
+    async def add_response_embed(
+        self, agent_message: InternalMessage, user_message: discord.Message, **kwargs
+    ):
         if agent_message and user_message:
-            #logger.debug("Adding response embed to msg: {}".format(agent_message.__dict__))
+            # logger.debug("Adding response embed to msg: {}".format(agent_message.__dict__))
             avatar = None
             if user_message.author.avatar:
                 avatar = user_message.author.avatar.url
@@ -75,23 +86,37 @@ class DiscordResponseTranslator(Translator):
             contents = user_message.content
             embed = discord.Embed(description=contents)
             embed.set_author(name=author_name, icon_url=avatar)
-            embed.set_footer(text="React with ✅ if you think this response was especially good or you'd like me to remember it")
+            embed.set_footer(
+                text="React with ✅ if you think this response was especially good or you'd like me to remember it"
+            )
             agent_message.embeds = [embed]
-            #return "agent_message", agent_message
+            # return "agent_message", agent_message
         else:
             raise ValueError("Agent message and user message must be provided.")
 
+
 class MessageTrimmerTranslator(Translator):
     __name__ = "MessageTrimmerTranslator"
+
     def __init__(self):
         super().__init__()
         self.translators.append(self.trim_message)
+
     async def trim_message(self, agent_message: InternalMessage, **kwargs):
-        agent_message.internal_content = agent_message.internal_content[::-1].split("<\n", 1)[-1][::-1].replace(" ", "", 1)
-        agent_message.external_content = agent_message.external_content[::-1].split("<\n", 1)[-1][::-1].replace(" ", "", 1)
+        agent_message.internal_content = (
+            agent_message.internal_content[::-1]
+            .split("<\n", 1)[-1][::-1]
+            .replace(" ", "", 1)
+        )
+        agent_message.external_content = (
+            agent_message.external_content[::-1]
+            .split("<\n", 1)[-1][::-1]
+            .replace(" ", "", 1)
+        )
         agent_message.internal_content = agent_message.internal_content.strip()
         agent_message.external_content = agent_message.external_content.strip()
-        #return "agent_message", agent_message
+        # return "agent_message", agent_message
+
 
 class CWTaggerTranslator(Translator):
 
@@ -148,15 +173,19 @@ class CWTaggerTranslator(Translator):
             f"{self.standard_boilerplate_prefix} {topic}"
         )
 
-    async def spoiler_text_and_add_cw_tag(self, agent_message: InternalMessage, **kwargs) -> None:
-        if not agent_message or (not agent_message.internal_content and agent_message.external_content):
+    async def spoiler_text_and_add_cw_tag(
+        self, agent_message: InternalMessage, **kwargs
+    ) -> None:
+        if not agent_message or (
+            not agent_message.internal_content and agent_message.external_content
+        ):
             return
         ranker = Ranker()
         top_labels: List[str] = await ranker.rank(
             texts=tuple(self.possible_cw_tag_options),
             query=agent_message.internal_content,
             top_k=self.top_k,
-            model=ranker.default_model
+            model=ranker.default_model,
         )
         if top_labels[0] in self.neutral_options:
             return
@@ -166,31 +195,42 @@ class CWTaggerTranslator(Translator):
                 for topic in top_labels
             ]
         )
-        agent_message.external_content = f"CW {final_label} ||{agent_message.external_content}||"
+        agent_message.external_content = (
+            f"CW {final_label} ||{agent_message.external_content}||"
+        )
 
 
 import random
 import ujson as json
 
+
 class EmojiTranslator(Translator):
 
     name = "EmojiTranslator"
 
-    def __init__(self, emojis: Optional[Dict[str, list]] = None, file: Optional[str] = None, **kwargs: dict) -> None:
+    def __init__(
+        self,
+        emojis: Optional[Dict[str, list]] = None,
+        file: Optional[str] = None,
+        **kwargs: dict,
+    ) -> None:
         super().__init__()
         self.translators.append(self.add_emoji_to_message)
         final_emojis = {}
         if emojis:
-            emojis = {f"What is an example of a sentence expressing {k} in its tone or implication?": v for k, v in emojis.items()}
+            emojis = {
+                f"What is an example of a sentence expressing {k} in its tone or implication?": v
+                for k, v in emojis.items()
+            }
             for k in emojis:
                 if isinstance(emojis[k], str):
                     emojis[k] = [emojis[k]]
             final_emojis.update(emojis)
         neutral = {
-            #"This is a neutral sentence.": [""],
-            #"This is a factual sentence": [""],
-            #"This sentence doesn't express any particular emotion.": [""],
-            #"This is a sentence that is not very interesting.": [""],
+            # "This is a neutral sentence.": [""],
+            # "This is a factual sentence": [""],
+            # "This sentence doesn't express any particular emotion.": [""],
+            # "This is a sentence that is not very interesting.": [""],
         }
         if file:
             with open(file, "r") as f:
@@ -214,9 +254,14 @@ class EmojiTranslator(Translator):
         ranker = Ranker()
         """Adds an emoji to the text provided based on its semantic similarity to the provided emojis and their labels, does not add an emoji if the result of rank is an empty list."""
         # emojis should look like {"happy, cheerful, good mood": ["<:happy:293844>", "<:some_other_emoji:293833>"]}, etc.
-        logger.debug(f"I am adding an emoji to the message now: {agent_message.internal_content}")
+        logger.debug(
+            f"I am adding an emoji to the message now: {agent_message.internal_content}"
+        )
         top_labels: List[str] = await ranker.rank(
-            texts=tuple(self.emojis.keys()), query=agent_message.internal_content, top_k=1, model=ranker.default_model
+            texts=tuple(self.emojis.keys()),
+            query=agent_message.internal_content,
+            top_k=1,
+            model=ranker.default_model,
         )
         logger.debug(f"The top labels are: {top_labels}")
         if top_labels:
@@ -226,19 +271,28 @@ class EmojiTranslator(Translator):
             agent_message.external_content = text
         return
 
+
 from personate.utils.apis import translate
-#def translate(text: str, to_lang: str) -> str:
+
+# def translate(text: str, to_lang: str) -> str:
 import pycld2 as cld2
 
 
 import asyncio
+
 
 class LanguageTranslator(Translator):
     def __init__(self, default_language_code: str = "en"):
         super().__init__()
         self.translators.append(self.translate_message)
         self.default_language_code = default_language_code
-    async def translate_message(self, agent_message: InternalMessage, processed_user_message: InternalMessage, **kwargs: dict) -> None:
+
+    async def translate_message(
+        self,
+        agent_message: InternalMessage,
+        processed_user_message: InternalMessage,
+        **kwargs: dict,
+    ) -> None:
         if agent_message and processed_user_message:
             isReliable, textBytesFound, details = cld2.detect(
                 processed_user_message.external_content
@@ -247,7 +301,9 @@ class LanguageTranslator(Translator):
             logger.debug(f"The user language is: {user_language}")
             if user_language != self.default_language_code and isReliable:
                 try:
-                    result = await translate(agent_message.external_content, user_language)
+                    result = await translate(
+                        agent_message.external_content, user_language
+                    )
                     logger.debug(f"The result of the posttranslation is: {result}")
                     if result:
                         agent_message.external_content = result[0]
@@ -260,16 +316,21 @@ class LanguageTranslator(Translator):
             language = details[0][1]
             logger.debug(f"The language is: {language}")
             if language == self.default_language_code and isReliable:
-                logger.debug(f"The language is the same as the default language, so I am not translating.")
+                logger.debug(
+                    f"The language is the same as the default language, so I am not translating."
+                )
                 return
             try:
-                result = await translate(processed_user_message.internal_content, self.default_language_code)
+                result = await translate(
+                    processed_user_message.internal_content, self.default_language_code
+                )
                 logger.debug(f"The result of the pretranslation is: {result}")
                 if result:
                     processed_user_message.internal_content = result[0]
             except:
                 pass
         return
+
 
 class EmptyTranslator(Translator):
     def __init__(self):

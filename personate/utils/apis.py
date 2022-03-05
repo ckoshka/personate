@@ -2,13 +2,17 @@ import json
 from pyrapidapi import APIManager
 from typing import Tuple, Coroutine
 from dotenv import load_dotenv
+
 load_dotenv()
 import os
+
 key = os.getenv("RAPID_API_KEY")
 if not key:
     raise Exception("RAPID_API_KEY not set in .env")
 
 apis = APIManager(key)
+
+
 @apis.json_decode("text")
 @apis.post(
     "https://microsoft-translator-text.p.rapidapi.com/translate?",
@@ -27,19 +31,22 @@ def translate(text: str, to_lang: str) -> Coroutine[Tuple[str, dict], None, None
         "includeAlignment": "false",
         "profanityAction": "NoAction",
         "textType": "plain",
-    } #type: ignore
+    }  # type: ignore
+
 
 @apis.get("wordsapiv1.p.rapidapi.com")
 def info_for_word(info_type: str, word: str) -> str:
     return f"https://wordsapiv1.p.rapidapi.com/words/{word}/{info_type}"
 
-#from api_decorators import json_decode, post, get as get_json
-#import ujson as json
+
+# from api_decorators import json_decode, post, get as get_json
+# import ujson as json
+
 
 @apis.json_decode("text")
 @apis.post(
     "https://microsoft-computer-vision3.p.rapidapi.com/describe?",
-    "microsoft-computer-vision3.p.rapidapi.com"
+    "microsoft-computer-vision3.p.rapidapi.com",
 )
 def get_description_for_image(url: str) -> Coroutine[Tuple[str, dict], None, None]:
     """This function returns the description of an image.
@@ -47,5 +54,5 @@ def get_description_for_image(url: str) -> Coroutine[Tuple[str, dict], None, Non
     :return: The description of the image as a list."""
     return json.dumps({"url": url}), {
         "language": "en",
-        "maxCandidates": "1"
-    } #type: ignore
+        "maxCandidates": "1",
+    }  # type: ignore

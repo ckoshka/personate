@@ -2,6 +2,8 @@ import discord
 from typing import Hashable
 import typing
 import slugify
+
+
 class InternalMessage:
     """
     This class is used to represent a message in a conversation. Non-nested (i.e floats, ints, and strings) attributes are shallowly copied over from discord.Message objects, or can be constructed ex nihilo. Most importantly, they contain a "reply_to" attribute with the id of the message being replied to, and an internal_content attribute that represents how the message should be displayed to a Swarm/Agent.
@@ -23,7 +25,7 @@ class InternalMessage:
         if message.reference and message.reference.resolved:
             setattr(new_instance, "reply_to", message.reference.resolved.id)
         else:
-            #Set the reply_to id to 0
+            # Set the reply_to id to 0
             setattr(new_instance, "reply_to", 0)
         setattr(new_instance, "internal_content", message.content)
         setattr(new_instance, "external_content", message.content)
@@ -58,7 +60,7 @@ class InternalMessage:
         "channel_id",
         "embeds",
         "files",
-        "author_id"
+        "author_id",
     )
 
     def __init__(self):
@@ -78,7 +80,9 @@ class InternalMessage:
         if hasattr(self, "name") and hasattr(self, "internal_content"):
             return f"<{slugify.slugify(self.name, separator=' ', lowercase=False)}>: {self.internal_content}"
         else:
-            raise AttributeError("InternalMessage does not have a name or internal_content attribute.")
+            raise AttributeError(
+                "InternalMessage does not have a name or internal_content attribute."
+            )
 
     def __str__(self) -> str:
         return self.display_as_irc()

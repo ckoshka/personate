@@ -232,7 +232,7 @@ class Agent:
                 asyncio.run(asyncio.wait_for(self.start(), timeout=300))
             except asyncio.TimeoutError:
                 continue
-    
+
     async def add_document(self, doc: Document):
         self.document_collection.add_document(doc)
 
@@ -245,26 +245,37 @@ class Agent:
         @self.bot.listen("on_ready")
         async def register_cog():
             from personate.meta.inbuilt_commands import make_agent_modifier
-            if not "AgentModifier" in self.bot.cogs.keys():
-                guild_ids = [g.id for g in await self.bot.fetch_guilds(limit=150).flatten()]
-                self.bot.add_cog(make_agent_modifier(self.bot, self, self.agent_dir, guild_ids))
 
+            if not "AgentModifier" in self.bot.cogs.keys():
+                guild_ids = [
+                    g.id for g in await self.bot.fetch_guilds(limit=150).flatten()
+                ]
+                self.bot.add_cog(
+                    make_agent_modifier(self.bot, self, self.agent_dir, guild_ids)
+                )
 
         @self.bot.listen("on_reaction_add")
         async def receive_reacts(reaction: discord.Reaction, user: discord.User):
-            #if the reaction emoji is a tick
-            if not (reaction.emoji == "✅" and reaction.message.author.name == self.name):
+            # if the reaction emoji is a tick
+            if not (
+                reaction.emoji == "✅" and reaction.message.author.name == self.name
+            ):
                 return
             if not user.id == self.bot.owner_id:
                 return
             agent_message_id = reaction.message.id
-            if not isinstance(reaction.message.embeds[0].footer.text, str) or not self.memory:
+            if (
+                not isinstance(reaction.message.embeds[0].footer.text, str)
+                or not self.memory
+            ):
                 return
             agent_message: InternalMessage = self.memory.db[agent_message_id]
             user_message_id = agent_message.reply_to
             user_message: InternalMessage = self.memory.db[user_message_id]
             interaction = str(user_message) + "\n" + str(agent_message)
-            logger.debug(f"{self.name} received positive feedback from this interaction: {interaction}")
+            logger.debug(
+                f"{self.name} received positive feedback from this interaction: {interaction}"
+            )
             self.prompt.examples.append(interaction)
             if not self.json_path:
                 return

@@ -216,12 +216,12 @@ class AgentFrame:
             and turn.external_message_agent
         ):
             raise Exception("No user message set.")
-        #pronouns = self.memory.db.get("pronouns", {}).get(turn.internal_message_user.author_id, None)
-        #logger.debug(f"Pronouns: {pronouns}")
-        #logger.debug(f'Pronouns db: {self.memory.db.get("pronouns", None)}')
-        #if pronouns:
-            #turn.internal_message_user.name += f" ({pronouns})"
-        logger.debug(f'Name of user: {turn.internal_message_user.name}')
+        # pronouns = self.memory.db.get("pronouns", {}).get(turn.internal_message_user.author_id, None)
+        # logger.debug(f"Pronouns: {pronouns}")
+        # logger.debug(f'Pronouns db: {self.memory.db.get("pronouns", None)}')
+        # if pronouns:
+        # turn.internal_message_user.name += f" ({pronouns})"
+        logger.debug(f"Name of user: {turn.internal_message_user.name}")
         self.memory.insert_message(external_message_user.id, turn.internal_message_user)
 
         frame = self.frame.clone()

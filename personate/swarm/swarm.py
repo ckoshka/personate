@@ -5,10 +5,12 @@ import inspect
 from personate.utils.logger import logger
 from personate.swarm.swarm_prompt import prompt
 
+
 class Swarm:
     def __init__(self):
         self.abilities: Dict[str, Callable] = {}
         self.prompt = prompt
+
     def use(self, func: Callable) -> Callable:
         """This inserts a function into self.abilities, with the key as the function's docstring, and the value as the function itself"""
 
@@ -42,8 +44,17 @@ class Swarm:
         if not len(self.abilities.keys()) > 0:
             return
         from acrossword import Ranker
+
         ranker = Ranker()
-        top_function_docstring = await ranker.rank(query="A Python function that would be able to solve this question: " + query, top_k=1, texts=tuple(self.abilities.keys()), model=ranker.default_model, return_none_if_below_threshold=True, threshold=0.1)  
+        top_function_docstring = await ranker.rank(
+            query="A Python function that would be able to solve this question: "
+            + query,
+            top_k=1,
+            texts=tuple(self.abilities.keys()),
+            model=ranker.default_model,
+            return_none_if_below_threshold=True,
+            threshold=0.1,
+        )
         if not top_function_docstring:
             return
         func = self.abilities[top_function_docstring[0]]
