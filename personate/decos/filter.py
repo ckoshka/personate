@@ -21,8 +21,8 @@ class Condition(ABC):
         return f"{self.__class__.__name__}({self.condition.__name__})"
 
 class Filter(ABC):
-    def __init__(self, *args, **kwargs) -> None:
-        self.conditions: List[Union[Condition, Filter]] = []
+    def __init__(self, *filters: List[Union['Filter', 'Condition']], **kwargs) -> None:
+        self.conditions: List[Union[Condition, Filter]] = list(filters) #type: ignore
 
     def __repr__(self) -> str:
         return f"<Filter {self.conditions}>"
