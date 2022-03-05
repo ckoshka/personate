@@ -1,4 +1,4 @@
-Setting up this library from scratch will probably take you a good half-hour, mostly waiting for stuff to be installed. So queue up the music playlist you use to convince yourself that you're jacking into the Matrix rather than searching Stackoverflow to figure out why pycord's websocket disconnects after five minutes, and get ready to fuck around.
+Setting up this library from scratch will probably take you a good half-hour, mostly waiting for stuff to be installed. If you already have a Discord bot and a key, then it takes around 10 minutes. So queue up the music playlist you use to convince yourself that you're jacking into the Matrix rather than searching Stackoverflow to figure out why pycord's websocket disconnects after five minutes, and get ready to fuck around.
 
 (The good thing is, once it's all set up, you can just write a half-assed agent.json file in ten minutes and be able to instantly talk to it. And it will be Surprisingly Good.)
 

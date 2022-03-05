@@ -160,14 +160,6 @@ class AgentFromJSON:
             agent.add_post_translator(cw_tagger)
             logger.debug(f"Using content warning topics {content_warning_topics}")
 
-        emoji_file: str = data.get("emoji_file", None)
-        emojis = data.get("emojis", dict())
-        if emojis or emoji_file:
-            from personate.decos.translators.translator import EmojiTranslator 
-            emoji_translator = EmojiTranslator(file=emoji_file, emojis=emojis)
-            agent.add_post_translator(emoji_translator)
-            logger.debug(f"Using emojis {emojis}")
-
         preprocessor_list = set(data.get("preprocessors", [])) & set(cls.available_preprocessors)
         post_processor_list = set(data.get("postprocessors", [])) & set(cls.available_postprocessors)
         logger.debug(f"Using preprocessors {preprocessor_list}")
@@ -195,6 +187,14 @@ class AgentFromJSON:
             image_to_text_translator = ImageToTextTranslator()
             agent.add_pre_translator(image_to_text_translator)
             logger.debug(f"Using images-to-text translator")
+
+        emoji_file: str = data.get("emoji_file", None)
+        emojis = data.get("emojis", dict())
+        if emojis or emoji_file:
+            from personate.decos.translators.translator import EmojiTranslator 
+            emoji_translator = EmojiTranslator(file=emoji_file, emojis=emojis)
+            agent.add_post_translator(emoji_translator)
+            logger.debug(f"Using emojis {emojis}")
 
         abilities_file = data.get("abilities_file", None)
         if abilities_file:

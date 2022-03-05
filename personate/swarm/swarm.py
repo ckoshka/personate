@@ -39,9 +39,9 @@ class Swarm:
 
     async def solve(self, query: str) -> Any:
         """This uses ranker to evaluate which function is most suited to the query, calls it, and returns the result"""
-        from acrossword import Ranker
         if not len(self.abilities.keys()) > 0:
             return
+        from acrossword import Ranker
         ranker = Ranker()
         top_function_docstring = await ranker.rank(query="A Python function that would be able to solve this question: " + query, top_k=1, texts=tuple(self.abilities.keys()), model=ranker.default_model, return_none_if_below_threshold=True, threshold=0.1)  
         if not top_function_docstring:

@@ -216,11 +216,11 @@ class AgentFrame:
             and turn.external_message_agent
         ):
             raise Exception("No user message set.")
-        pronouns = self.memory.db.get("pronouns", {}).get(turn.internal_message_user.author_id, None)
-        logger.debug(f"Pronouns: {pronouns}")
-        logger.debug(f'Pronouns db: {self.memory.db.get("pronouns", None)}')
-        if pronouns:
-            turn.internal_message_user.name += f" ({pronouns})"
+        #pronouns = self.memory.db.get("pronouns", {}).get(turn.internal_message_user.author_id, None)
+        #logger.debug(f"Pronouns: {pronouns}")
+        #logger.debug(f'Pronouns db: {self.memory.db.get("pronouns", None)}')
+        #if pronouns:
+            #turn.internal_message_user.name += f" ({pronouns})"
         logger.debug(f'Name of user: {turn.internal_message_user.name}')
         self.memory.insert_message(external_message_user.id, turn.internal_message_user)
 
@@ -244,7 +244,7 @@ class AgentFrame:
             self.swarm.solve(turn.internal_message_user.internal_content)
         )
 
-        if self.document_collection:
+        if self.document_collection and len(self.document_collection.documents) > 0:
             top_results = [
                 r.replace("\n", " ")
                 for r in await self.document_collection.search(

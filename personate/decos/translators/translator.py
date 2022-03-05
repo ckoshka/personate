@@ -245,7 +245,7 @@ class LanguageTranslator(Translator):
             )
             user_language = details[0][1]
             logger.debug(f"The user language is: {user_language}")
-            if user_language != self.default_language_code:
+            if user_language != self.default_language_code and isReliable:
                 try:
                     result = await translate(agent_message.external_content, user_language)
                     logger.debug(f"The result of the posttranslation is: {result}")
