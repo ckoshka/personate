@@ -62,10 +62,11 @@ class DeviatesFromScriptFilter(Filter):
         super().__init__([DeviatesFromScriptCondition])
 
 async def too_similar(threshold: int, response: str, final_prompt: str) -> bool:
+    response = response.split("\n<")[0]
     return fuzz.partial_token_sort_ratio(response, final_prompt) >= threshold #type: ignore
 
 class TooSimilarFilter(Filter):
-    def __init__(self, threshold: int = 78) -> None:
+    def __init__(self, threshold: int = 68) -> None:
         self.threshold = threshold
         super().__init__([Condition(too_similar)])
 
