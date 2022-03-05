@@ -36,18 +36,29 @@ class CommandRegister:
         self.prefix = f"{agent.name}!"
         self.owner_id = bot.owner_id
         self.functions: Dict[str, Callable] = dict()
+        self.conditions: Dict[str, Callable] = dict()
         self.bot.add_listener(func=self.process_arguments, name="on_message")
-    def register(self, func: Callable) -> Callable:
-        funcname = func.__name__
-        self.functions[self.prefix + funcname] = func
-        return func
+    def register(self, owner: bool = True, condition: Optional[Callable] = None) -> Callable:
+        if not condition:
+            condition = lambda msg: True
+        def register_outer(self, func: Callable) -> Callable:
+            nonlocal condition
+            funcname = func.__name__
+            self.functions[self.prefix + funcname] = func
+            if owner:
+                def new_condition(m: discord.Message) -> bool:
+                    return condition(m) and m.author.id == self.owner_id
+                condition = new_condition
+            self.conditions[func.__name__] = condition
+            return func
+        return register_outer
     async def process_arguments(self, msg: discord.Message):
         content = msg.content
         if not content.startswith(self.prefix):
             return
-        if not msg.author.id == self.owner_id:
-            return
         command = content.split(" ")[0].lower()
+        if not self.conditions[command](msg):
+            return
         try:
             func = self.functions[command]
         except KeyError:
@@ -66,7 +77,7 @@ def make_agent_modifier(
             self.agent: Agent = agent
             self.agent_dir: str = agent_dir
 
-        @cr.register
+        @cr.register(owner=True)
         async def read(self, ctx: discord.Message, urls: str):
             await ctx.channel.send("reading!")
             url_list = to_list(urls)
@@ -89,7 +100,7 @@ def make_agent_modifier(
                 f"I have added the following documents to {self.agent.name}'s database: \n{urls}"
             )
 
-        @cr.register
+        @cr.register(owner=True)
         async def remember(self, ctx: discord.Message, fact: str):
             await ctx.channel.send("Remembering!")
             collection: DocumentCollection = self.agent.document_collection
@@ -109,7 +120,7 @@ def make_agent_modifier(
                 await doc.serialise()
             await ctx.channel.send("Remembering complete.")
 
-        @cr.register
+        @cr.register(owner=True)
         async def changetemplate(self, ctx: discord.Message):
             if not self.agent.prompt:
                 return
@@ -131,7 +142,7 @@ def make_agent_modifier(
                 with open(self.agent.json_path, "w") as f:
                     json.dump(data, f)
 
-        @cr.register
+        @cr.register(owner=True)
         async def addexample(self, ctx: discord.Message, example: str):
             if "->" in example:
                 username = username_generator()
@@ -156,7 +167,7 @@ def make_agent_modifier(
                 with open(self.agent.json_path, "w") as f:
                     json.dump(data, f)
 
-        @cr.register
+        @cr.register(owner=True)
         async def teachemoji(
             self, ctx: discord.Message, emoji: str, description: str
         ):
@@ -171,7 +182,7 @@ def make_agent_modifier(
             )
             logger.info(f"Emoji added to {self.agent.name}'s translator.")
 
-        @cr.register
+        @cr.register()
         async def addpronouns(self, ctx: discord.Message, pronoun: str):
             await ctx.channel.send(f"Registering your pronouns as {pronoun}")
             if not self.agent.prompt.memory or not ctx.author:
@@ -186,7 +197,7 @@ def make_agent_modifier(
             db.set("pronouns", current_pronouns)
             db.commit()
 
-        @cr.register
+        @cr.register(owner=True)
         async def addgoal(self, ctx: discord.Message, goal: str):
             last_line = self.agent.prompt.frame.field_values[
                 "pre_conversation_annotation"
