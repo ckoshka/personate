@@ -4,6 +4,7 @@ import inspect
 import asyncio
 from rapidfuzz import fuzz, process
 import functools
+from personate.utils.logger import logger
 
 class Condition(ABC):
     def __init__(self, condition: Callable) -> None:
@@ -16,12 +17,23 @@ class Condition(ABC):
         else:
             return await loop.run_in_executor(None, functools.partial(self.condition, *args, **kwargs))
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.condition.__name__})"
+
 class Filter(ABC):
     def __init__(self, *args, **kwargs) -> None:
         self.conditions: List[Union[Condition, Filter]] = []
 
+    def __repr__(self) -> str:
+        return f"<Filter {self.conditions}>"
+
     async def validate(self, *args, **kwargs) -> bool:
-        return any([await condition.validate(*args, **kwargs) for condition in self.conditions])
+        bools = [await condition.validate(*args, **kwargs) for condition in self.conditions]
+        names = [condition for condition in self.conditions]
+        bools_and_names = "\n".join(f"{name}: {bool_}" for name, bool_ in zip(names, bools))
+        logger.debug(f"{self} produced the following results: {bools_and_names}")
+
+        return any(bools)
 
     @classmethod
     def redo(cls, redos: int = 3, **kwargs) -> Callable:
