@@ -70,7 +70,7 @@ class TooSimilarFilter(Filter):
         super().__init__([Condition(too_similar)])
 
     async def validate(self, response: str, final_prompt: str, **kwargs) -> bool:
-        return await self.validate(response=response, final_prompt=final_prompt, threshold=self.threshold)
+        return await super().validate(response=response, final_prompt=final_prompt, threshold=self.threshold)
 
 #from decos.slurslist import slurs
 async def contains_slurs(slurs: Set[str], response: str, **kwargs) -> bool:
@@ -85,7 +85,7 @@ class SlurFilter(Filter):
         self.slurs = set(slurs)
         super().__init__([Condition(contains_slurs)])
     async def validate(self, response: str, **kwargs) -> bool:
-        return await self.validate(response=response, slurs=self.slurs)
+        return await super().validate(response=response, slurs=self.slurs)
 
 import csv
 def get_inbuilt_slurs() -> List[str]:
