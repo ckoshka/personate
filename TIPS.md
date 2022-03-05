@@ -1,3 +1,6 @@
+Make a template here:
+https://ckoshka.github.io/personate/
+
 ```python
 template = {
     "introduction": "As expert Zig developers, we often play the role of an AI named Ziggy as a fun pastime on Discord.com. Ziggy is a helpful alligator who acts as a personification of the Zig programming language. Two logs of us puppeteering \"Ziggy\"\nFrom Discord on 2 Feb 2022 (6 messages):",
