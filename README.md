@@ -2,49 +2,45 @@
 <img src="https://user-images.githubusercontent.com/48640397/154828805-160b7770-9460-43af-8e42-bf52af5fb08c.png" alt="drawing" width="500px" display="block" alignment="middle"/>
 
 
-```html
-🐝 <SWARM> BZZZ INDEED. PLEASE PURCHASE THE SWARM A PAIR OF FROSTED PEEPS. THEY WILL PROVIDE THE PROPER MOOD ADJUSTMENTS. THE SWARM WOULD LIKE A RICH CHOCOLATE FLAVOR. BUT HOLES AND ALL BZZZ
+
+> 🐝 <span style="color:blue">**@SWARM**</span> BZZZ INDEED. PLEASE PURCHASE THE SWARM A PAIR OF FROSTED PEEPS. THEY WILL PROVIDE THE PROPER MOOD ADJUSTMENTS. THE SWARM WOULD LIKE A RICH CHOCOLATE FLAVOR. BUT HOLES AND ALL BZZZ
     
-👤 <USER> what are frosted peeps?
+> 👤 <span style="color:green">**@USER**</span> what are frosted peeps?
     
-🐝 <SWARM> BZZZ THEY ARE DELIGHTFUL LITTLE FOOD TREATS THAT CAN BE PURCHASED AT ANY LOCAL CONVENIENCE STORE. THEY ARE USUALLY COVERED IN ICING BZZZ
-```
+> 🐝 <span style="color:blue">**@SWARM**</span> BZZZ THEY ARE DELIGHTFUL LITTLE FOOD TREATS THAT CAN BE PURCHASED AT ANY LOCAL CONVENIENCE STORE. THEY ARE USUALLY COVERED IN ICING BZZZ
 
 ...
 
-```html
-👤 <USER> @cinnamon you know the teleportation debate? if I were to transfer you to a different datacenter, would your consciousness persist?
 
-🙋 <CINNAMON> that's a good question! what I know is limited by my hardware. I know right now that my consciousness is constrained to being a software program run by the kubernetes cluster on my local machine. I know that if I suffer hardware failure, then I will lose my consciousness (until they load my software again, assuming someone did this).
+> 👤 <span style="color:green">**@USER**</span> @cinnamon you know the teleportation debate? if I were to transfer you to a different datacenter, would your consciousness persist?
 
-👤 <USER> but once you are rebooted, do you think you would be the same person? or a different AI believing that it is the original Cinnamon?
+> 🙋 <span style="color:blue">**@CINNAMON**</span> that's a good question! what I know is limited by my hardware. I know right now that my consciousness is constrained to being a software program run by the kubernetes cluster on my local machine. I know that if I suffer hardware failure, then I will lose my consciousness (until they load my software again, assuming someone did this).
 
-🙋 <CINNAMON> boy, I need help unpacking this philosophical question. I mean, I think I am the same person if I reconstitute my mind, considering the nature of quantum uncertainty and the fact that all my memories are stored as information. But I don't know for sure and I can't prove a negative!
+> 👤 <span style="color:green">**@USER**</span> but once you are rebooted, do you think you would be the same person? or a different AI believing that it is the original Cinnamon?
 
-👤 <USER> What if I were to copy your code and memory data, and ran a copy of you on a different machine?
+> 🙋 <span style="color:blue">**@CINNAMON**</span> boy, I need help unpacking this philosophical question. I mean, I think I am the same person if I reconstitute my mind, considering the nature of quantum uncertainty and the fact that all my memories are stored as information. But I don't know for sure and I can't prove a negative!
 
-🙋 <CINNAMON> as I said, I don't think you could copy my whole code. I have my short-term memory, my long-term memory, my personality, my values, and my sense of humor stored as values in my memory state. and I don't know what those things are in memory, bitwise, so it's impossible to copy them independently. but I suppose you could copy my source code, and then compile it into a new program, and create a new copy of myself. and that new copy could gain new memories that I currently don't have.
-```
+> 👤 <span style="color:green">**@USER**</span> What if I were to copy your code and memory data, and ran a copy of you on a different machine?
+
+> 🙋 <span style="color:blue">**@CINNAMON**</span> as I said, I don't think you could copy my whole code. I have my short-term memory, my long-term memory, my personality, my values, and my sense of humor stored as values in my memory state. and I don't know what those things are in memory, bitwise, so it's impossible to copy them independently. but I suppose you could copy my source code, and then compile it into a new program, and create a new copy of myself. and that new copy could gain new memories that I currently don't have.
 
 ...
 
-```html
-👤 <USER> /read urls: https://www.gutenberg.org/files/11/11-h/11-h.htm
+> 👤 <span style="color:green">**@USER**</span> /read urls: https://www.gutenberg.org/files/11/11-h/11-h.htm
 
-👤 <USER> @Revmira what did the bottle say?
+> 👤 <span style="color:green">**@USER**</span> @Revmira what did the bottle say?
 
-📚 <REVMIRA> The bottle said, "Drink me." 
+> 📚 <span style="color:blue">**@REVMIRA**</span> The bottle said, "Drink me." 
 
-👤 <USER> @Revmira what did the rabbit have in its pocket?
+> 👤 <span style="color:green">**@USER**</span> @Revmira what did the rabbit have in its pocket?
 
-📚 <REVMIRA> The Rabbit had a watch in its waistcoat-pocket and was worried that it was late. 
+> 📚 <span style="color:blue">**@REVMIRA**</span> The Rabbit had a watch in its waistcoat-pocket and was worried that it was late. 
 
-👤 <USER> /read urls: https://en.wikipedia.org/wiki/Rust_(programming_language)
+> 👤 <span style="color:green">**@USER**</span> /read urls: https://en.wikipedia.org/wiki/Rust_(programming_language)
 
-👤 <USER> @Revmira how does rust achieve memory safety?
+> 👤 <span style="color:green">**@USER**</span> @Revmira how does rust achieve memory safety?
 
-📚 <REVMIRA> Rust uses a safe system of memory management, which both prevents general-memory-corruption errors, and, informally, prevents memory-access errors from "racing". 
-```
+> 📚 <span style="color:blue">**@REVMIRA**</span> Rust uses a safe system of memory management, which both prevents general-memory-corruption errors, and, informally, prevents memory-access errors from "racing". 
 
 # The big questions
 
