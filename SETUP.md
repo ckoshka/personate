@@ -82,6 +82,7 @@ Or be an extremely cool person and add support for other options. I only have su
 * If you don't need your bot to understand images, or talk to you in Sinhala, then you don't need a RapidAPI key so **ignore this**. But if you do, just go [here](https://rapidapi.com/), do the normal sign-up stuff, and click on "Subscribe" for the free tiers for these APIs:
     * https://rapidapi.com/microsoft-azure-org-microsoft-cognitive-services/api/microsoft-translator-text/
     * https://rapidapi.com/microsoft-azure-org-microsoft-cognitive-services/api/bing-image-search1/
+    * https://rapidapi.com/microsoft-azure-org-microsoft-cognitive-services/api/microsoft-computer-vision3/
 * Alternatively, you could just make your own custom Translator subclass and use that with whatever service you want (see Overview.md).
 
 ---
