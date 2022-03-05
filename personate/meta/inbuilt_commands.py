@@ -30,20 +30,45 @@ from personate.utils.username_generator import username_generator
 def to_list(item: str) -> List[str]:
     return item.split("\n")
 
+class CommandRegister:
+    def __init__(self, bot: discord.Bot, agent: Agent):
+        self.bot = bot
+        self.prefix = f"{agent.name}!"
+        self.owner_id = bot.owner_id
+        self.functions: Dict[str, Callable] = dict()
+        self.bot.add_listener(func=self.process_arguments, name="on_message")
+    def register(self, func: Callable) -> Callable:
+        funcname = func.__name__
+        self.functions[self.prefix + funcname] = func
+        return func
+    async def process_arguments(self, msg: discord.Message):
+        content = msg.content
+        if not content.startswith(self.prefix):
+            return
+        if not msg.author.id == self.owner_id:
+            return
+        command = content.split(" ")[0].lower()
+        try:
+            func = self.functions[command]
+        except KeyError:
+            return
+        content = content.replace(command, "").strip()
+        await func(msg, content)
+
 
 def make_agent_modifier(
     bot: discord.Bot, agent: Agent, agent_dir: str, guild_ids: List[int]
 ) -> Cog:
+    cr = CommandRegister(bot=bot, agent=agent)
     class AgentModifier(Cog):
         def __init__(self, bot: discord.Bot, agent: Agent, agent_dir: str) -> None:
             self.bot: discord.Bot = bot
             self.agent: Agent = agent
             self.agent_dir: str = agent_dir
 
-        @commands.command(guild_ids=guild_ids)
-        @commands.is_owner()
-        async def read(self, ctx: discord.ApplicationContext, urls: str):
-            await ctx.respond("reading!")
+        @cr.register
+        async def read(self, ctx: discord.Message, urls: str):
+            await ctx.channel.send("reading!")
             url_list = to_list(urls)
             documents = [
                 await Document.from_url_or_file(
@@ -55,25 +80,25 @@ def make_agent_modifier(
                 for url in url_list
             ]
             # logger.info(f"Reading {len(docs)} documents.")
-            await ctx.respond(f"Adding {len(documents)} documents.")
+            await ctx.channel.send(f"Adding {len(documents)} documents.")
             # documents = await asyncio.gather(*[d for d in docs])
             logger.info(f"Finished processing {len(documents)} documents.")
             for doc in documents:
                 await self.agent.add_document(doc)
-            await ctx.respond(
+            await ctx.channel.send(
                 f"I have added the following documents to {self.agent.name}'s database: \n{urls}"
             )
 
-        @commands.command(guild_ids=guild_ids)
-        async def remember(self, ctx: discord.ApplicationContext, fact: str):
-            ctx.respond("Remembering!")
+        @cr.register
+        async def remember(self, ctx: discord.Message, fact: str):
+            await ctx.channel.send("Remembering!")
             collection: DocumentCollection = self.agent.document_collection
             try:
                 doc = collection.retrieve("facts")
                 await doc.add_chunk(fact)
                 await doc.serialise()
             except IndexError:
-                await ctx.respond("No facts found. Creating new facts document.")
+                await ctx.channel.send("No facts found. Creating new facts document.")
                 doc = await Document.from_sentences(
                     source=[fact],
                     source_name="facts",
@@ -82,24 +107,23 @@ def make_agent_modifier(
                 )
                 collection.add_document(doc)
                 await doc.serialise()
-            await ctx.respond("Remembering complete.")
+            await ctx.channel.send("Remembering complete.")
 
-        @commands.command(guild_ids=guild_ids)
-        @commands.is_owner()
-        async def changetemplate(self, ctx: discord.ApplicationContext):
+        @cr.register
+        async def changetemplate(self, ctx: discord.Message):
             if not self.agent.prompt:
                 return
             logger.info(f"Changing intro for {self.agent.name}.")
             old_intro = self.agent.prompt.frame.field_values["introduction"]
-            await ctx.respond(f"Your current intro is:")
-            await ctx.respond(f"{old_intro}")
-            await ctx.respond(f"Please reply with the new intro.")
+            await ctx.channel.send(f"Your current intro is:")
+            await ctx.channel.send(f"{old_intro}")
+            await ctx.channel.send(f"Please reply with the new intro.")
             new_intro = await self.bot.wait_for(
                 "message", check=lambda m: m.author == ctx.author
             )
             self.agent.prompt.frame.field_values["introduction"] = new_intro.content
-            await ctx.respond(f"Your new intro is:")
-            await ctx.respond(f"{new_intro.content}")
+            await ctx.channel.send(f"Your new intro is:")
+            await ctx.channel.send(f"{new_intro.content}")
             if self.agent.json_path:
                 with open(self.agent.json_path, "r") as f:
                     data = json.load(f)
@@ -107,9 +131,8 @@ def make_agent_modifier(
                 with open(self.agent.json_path, "w") as f:
                     json.dump(data, f)
 
-        @commands.command(guild_ids=guild_ids)
-        @commands.is_owner()
-        async def addexample(self, ctx: discord.ApplicationContext, example: str):
+        @cr.register
+        async def addexample(self, ctx: discord.Message, example: str):
             if "->" in example:
                 username = username_generator()
                 agentname = self.agent.name
@@ -123,9 +146,9 @@ def make_agent_modifier(
             if not self.agent.prompt:
                 return
             # example = await self.bot.wait_for('message', check=lambda m: m.author == ctx.author)
-            await ctx.respond(f"Adding example: {example}")
+            await ctx.channel.send(f"Adding example: {example}")
             self.agent.prompt.examples.append(example)
-            await ctx.respond(f"Example added.")
+            await ctx.channel.send(f"Example added.")
             if self.agent.json_path:
                 with open(self.agent.json_path, "r") as f:
                     data = json.load(f)
@@ -133,25 +156,24 @@ def make_agent_modifier(
                 with open(self.agent.json_path, "w") as f:
                     json.dump(data, f)
 
-        @commands.command(guild_ids=guild_ids)
-        @commands.is_owner()
+        @cr.register
         async def teachemoji(
-            self, ctx: discord.ApplicationContext, emoji: str, description: str
+            self, ctx: discord.Message, emoji: str, description: str
         ):
-            await ctx.respond(f"Setting emoji to {emoji}")
+            await ctx.channel.send(f"Setting emoji to {emoji}")
             retrieved_translator = self.agent.post_translator.retrieve_by_classname(
                 "EmojiTranslator"
             )
             if isinstance(retrieved_translator, EmojiTranslator):
                 retrieved_translator.append_emoji(tags=description, emoji=emoji)
-            await ctx.respond(
+            await ctx.channel.send(
                 f"I have added the following emoji to {self.agent.name}'s translator: \n{emoji}"
             )
             logger.info(f"Emoji added to {self.agent.name}'s translator.")
 
-        @commands.command(guild_ids=guild_ids)
-        async def addpronouns(self, ctx: discord.ApplicationContext, pronoun: str):
-            await ctx.respond(f"Registering your pronouns as {pronoun}")
+        @cr.register
+        async def addpronouns(self, ctx: discord.Message, pronoun: str):
+            await ctx.channel.send(f"Registering your pronouns as {pronoun}")
             if not self.agent.prompt.memory or not ctx.author:
                 return
             db = self.agent.prompt.memory.db
@@ -164,9 +186,8 @@ def make_agent_modifier(
             db.set("pronouns", current_pronouns)
             db.commit()
 
-        @commands.command(guild_ids=guild_ids)
-        @commands.is_owner()
-        async def addgoal(self, ctx: discord.ApplicationContext, goal: str):
+        @cr.register
+        async def addgoal(self, ctx: discord.Message, goal: str):
             last_line = self.agent.prompt.frame.field_values[
                 "pre_conversation_annotation"
             ]
@@ -184,6 +205,6 @@ def make_agent_modifier(
                 self.agent.prompt.frame.field_values[
                     "pre_conversation_annotation"
                 ] += f"\n(Note: in this conversation, we skillfully direct the conversation to attempt to {goal})"
-            await ctx.respond(f"Changed goal to: {goal}")
+            await ctx.channel.send(f"Changed goal to: {goal}")
 
     return AgentModifier(bot=bot, agent=agent, agent_dir=agent_dir)
