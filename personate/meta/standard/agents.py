@@ -25,6 +25,7 @@ uvloop.install()
 import asyncio
 import os
 import types
+import random
 
 # new_ranker.add_model("all-mpnet-base-v2")
 import discord
@@ -230,6 +231,8 @@ class Agent:
         while True:
             try:
                 asyncio.run(asyncio.wait_for(self.start(), timeout=300))
+                self.bot.clear()
+                self.register_listeners()
             except asyncio.TimeoutError:
                 continue
 
@@ -242,17 +245,23 @@ class Agent:
         async def receive_messages(message: discord.Message):
             asyncio.create_task(self.reply(message))
 
-        @self.bot.listen("on_ready")
+        @self.bot.listen("on_connect")
         async def register_cog():
+            logger.debug(f"{self.name} is ready.")
             from personate.meta.inbuilt_commands import make_agent_modifier
+            logger.debug(f"{self.name} is registering inbuilt commands.")
 
             if not "AgentModifier" in self.bot.cogs.keys():
+                logger.debug("Adding AgentModifier cog")
                 guild_ids = [
                     g.id for g in await self.bot.fetch_guilds(limit=150).flatten()
                 ]
                 self.bot.add_cog(
                     make_agent_modifier(self.bot, self, self.agent_dir, guild_ids)
                 )
+                logger.debug(f"{self.name} registered AgentModifier cog")
+            else:
+                logger.debug("AgentModifier already registered")
 
         @self.bot.listen("on_reaction_add")
         async def receive_reacts(reaction: discord.Reaction, user: discord.User):
@@ -301,6 +310,10 @@ class Agent:
         )
         if isinstance(external_message_agent, discord.WebhookMessage):
             await self.face.update(internal_message_agent, external_message_agent)
+            # Reply to self randomly
+            #await asyncio.sleep(random.random() * 3)
+            #if random.random() < 0.38:
+                #asyncio.create_task(self.reply(external_message_agent))
 
     def register_all(self):
         self.register_listeners()

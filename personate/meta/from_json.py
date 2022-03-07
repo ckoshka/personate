@@ -156,16 +156,15 @@ class AgentFromJSON:
 
         # if reading list, first check if the urllib-encoded urls already exist in a knowledge subdirectory
         knowledge_directory = data.get("knowledge_directory", home_dir + "/knowledge")
+        for file in os.listdir(knowledge_directory):
+            agent.add_knowledge(
+                filename=knowledge_directory + "/" + file,
+                pre_computed=True,
+            )
         reading_list = data.get("reading_list", [])
         for url in reading_list:
             if os.path.exists(knowledge_directory + "/" + quote_plus(url) + ".json"):
-                agent.add_knowledge(
-                    filename=knowledge_directory + "/" + quote_plus(url) + ".json",
-                    pre_computed=True,
-                )
-                logger.debug(
-                    f'Using pre-computed knowledge {knowledge_directory + "/" + quote_plus(url) + ".json"}'
-                )
+                continue
             else:
                 if "http" in url or "www" in url:
                     agent.add_knowledge(url, is_url=True)

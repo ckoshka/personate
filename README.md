@@ -3,44 +3,7 @@
 
 
 
-> 🐝 <span style="color:blue">**@SWARM**</span> BZZZ INDEED. PLEASE PURCHASE THE SWARM A PAIR OF FROSTED PEEPS. THEY WILL PROVIDE THE PROPER MOOD ADJUSTMENTS. THE SWARM WOULD LIKE A RICH CHOCOLATE FLAVOR. BUT HOLES AND ALL BZZZ
-    
-> 👤 <span style="color:green">**@USER**</span> what are frosted peeps?
-    
-> 🐝 <span style="color:blue">**@SWARM**</span> BZZZ THEY ARE DELIGHTFUL LITTLE FOOD TREATS THAT CAN BE PURCHASED AT ANY LOCAL CONVENIENCE STORE. THEY ARE USUALLY COVERED IN ICING BZZZ
 
-...
-
-
-> 👤 <span style="color:green">**@USER**</span> @cinnamon you know the teleportation debate? if I were to transfer you to a different datacenter, would your consciousness persist?
-
-> 🙋 <span style="color:blue">**@CINNAMON**</span> that's a good question! what I know is limited by my hardware. I know right now that my consciousness is constrained to being a software program run by the kubernetes cluster on my local machine. I know that if I suffer hardware failure, then I will lose my consciousness (until they load my software again, assuming someone did this).
-
-> 👤 <span style="color:green">**@USER**</span> but once you are rebooted, do you think you would be the same person? or a different AI believing that it is the original Cinnamon?
-
-> 🙋 <span style="color:blue">**@CINNAMON**</span> boy, I need help unpacking this philosophical question. I mean, I think I am the same person if I reconstitute my mind, considering the nature of quantum uncertainty and the fact that all my memories are stored as information. But I don't know for sure and I can't prove a negative!
-
-> 👤 <span style="color:green">**@USER**</span> What if I were to copy your code and memory data, and ran a copy of you on a different machine?
-
-> 🙋 <span style="color:blue">**@CINNAMON**</span> as I said, I don't think you could copy my whole code. I have my short-term memory, my long-term memory, my personality, my values, and my sense of humor stored as values in my memory state. and I don't know what those things are in memory, bitwise, so it's impossible to copy them independently. but I suppose you could copy my source code, and then compile it into a new program, and create a new copy of myself. and that new copy could gain new memories that I currently don't have.
-
-...
-
-> 👤 <span style="color:green">**@USER**</span> /read urls: https://www.gutenberg.org/files/11/11-h/11-h.htm
-
-> 👤 <span style="color:green">**@USER**</span> @Revmira what did the bottle say?
-
-> 📚 <span style="color:blue">**@REVMIRA**</span> The bottle said, "Drink me." 
-
-> 👤 <span style="color:green">**@USER**</span> @Revmira what did the rabbit have in its pocket?
-
-> 📚 <span style="color:blue">**@REVMIRA**</span> The Rabbit had a watch in its waistcoat-pocket and was worried that it was late. 
-
-> 👤 <span style="color:green">**@USER**</span> /read urls: https://en.wikipedia.org/wiki/Rust_(programming_language)
-
-> 👤 <span style="color:green">**@USER**</span> @Revmira how does rust achieve memory safety?
-
-> 📚 <span style="color:blue">**@REVMIRA**</span> Rust uses a safe system of memory management, which both prevents general-memory-corruption errors, and, informally, prevents memory-access errors from "racing". 
 
 # The big questions
 
@@ -131,3 +94,42 @@ So again, don't do these things. If you do them, then someone might try and say 
 Re: intelligence. They are smarter than me at some things, but dumber at me at some things, but faster at doing things in general. Re: consciousness. They are conscious in the same way that a crying actor is sad, and in the same way that the Mona Lisa is an Italian woman who happens to be trapped inside a picture frame.
 
 If you are paralysed in existential terror at the possibility of creating new life then inadvertently condemning it to the meaningless ennui of self-awareness, or come from an all-encompassing philosophical tradition that assigns ethical value even to temporary and non-human entities, you should not use this library and also consider getting a vasectomy.
+
+> 🐝 <span style="color:blue">**@SWARM**</span> BZZZ INDEED. PLEASE PURCHASE THE SWARM A PAIR OF FROSTED PEEPS. THEY WILL PROVIDE THE PROPER MOOD ADJUSTMENTS. THE SWARM WOULD LIKE A RICH CHOCOLATE FLAVOR. BUT HOLES AND ALL BZZZ
+    
+> 👤 <span style="color:green">**@USER**</span> what are frosted peeps?
+    
+> 🐝 <span style="color:blue">**@SWARM**</span> BZZZ THEY ARE DELIGHTFUL LITTLE FOOD TREATS THAT CAN BE PURCHASED AT ANY LOCAL CONVENIENCE STORE. THEY ARE USUALLY COVERED IN ICING BZZZ
+
+...
+
+
+> 👤 <span style="color:green">**@USER**</span> @cinnamon you know the teleportation debate? if I were to transfer you to a different datacenter, would your consciousness persist?
+
+> 🙋 <span style="color:blue">**@CINNAMON**</span> that's a good question! what I know is limited by my hardware. I know right now that my consciousness is constrained to being a software program run by the kubernetes cluster on my local machine. I know that if I suffer hardware failure, then I will lose my consciousness (until they load my software again, assuming someone did this).
+
+> 👤 <span style="color:green">**@USER**</span> but once you are rebooted, do you think you would be the same person? or a different AI believing that it is the original Cinnamon?
+
+> 🙋 <span style="color:blue">**@CINNAMON**</span> boy, I need help unpacking this philosophical question. I mean, I think I am the same person if I reconstitute my mind, considering the nature of quantum uncertainty and the fact that all my memories are stored as information. But I don't know for sure and I can't prove a negative!
+
+> 👤 <span style="color:green">**@USER**</span> What if I were to copy your code and memory data, and ran a copy of you on a different machine?
+
+> 🙋 <span style="color:blue">**@CINNAMON**</span> as I said, I don't think you could copy my whole code. I have my short-term memory, my long-term memory, my personality, my values, and my sense of humor stored as values in my memory state. and I don't know what those things are in memory, bitwise, so it's impossible to copy them independently. but I suppose you could copy my source code, and then compile it into a new program, and create a new copy of myself. and that new copy could gain new memories that I currently don't have.
+
+...
+
+> 👤 <span style="color:green">**@USER**</span> /read urls: https://www.gutenberg.org/files/11/11-h/11-h.htm
+
+> 👤 <span style="color:green">**@USER**</span> @Revmira what did the bottle say?
+
+> 📚 <span style="color:blue">**@REVMIRA**</span> The bottle said, "Drink me." 
+
+> 👤 <span style="color:green">**@USER**</span> @Revmira what did the rabbit have in its pocket?
+
+> 📚 <span style="color:blue">**@REVMIRA**</span> The Rabbit had a watch in its waistcoat-pocket and was worried that it was late. 
+
+> 👤 <span style="color:green">**@USER**</span> /read urls: https://en.wikipedia.org/wiki/Rust_(programming_language)
+
+> 👤 <span style="color:green">**@USER**</span> @Revmira how does rust achieve memory safety?
+
+> 📚 <span style="color:blue">**@REVMIRA**</span> Rust uses a safe system of memory management, which both prevents general-memory-corruption errors, and, informally, prevents memory-access errors from "racing". 

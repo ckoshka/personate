@@ -183,4 +183,6 @@ def make_agent_modifier(
                 ] += f"\n(Note: in this conversation, we skillfully direct the conversation to attempt to {goal})"
             await ctx.channel.send(f"Changed goal to: {goal}")
 
-    return AgentModifier(bot=bot, agent=agent, agent_dir=agent_dir)
+    am = AgentModifier(bot=bot, agent=agent, agent_dir=agent_dir)
+    cr.tied_to = am
+    return am

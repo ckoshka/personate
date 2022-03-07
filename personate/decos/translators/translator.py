@@ -78,16 +78,16 @@ class DiscordResponseTranslator(Translator):
     ):
         if agent_message and user_message:
             # logger.debug("Adding response embed to msg: {}".format(agent_message.__dict__))
-            avatar = None
-            if user_message.author.avatar:
-                avatar = user_message.author.avatar.url
-            message_id = user_message.id
-            author_name = user_message.author.name
-            contents = user_message.content
-            embed = discord.Embed(description=contents)
-            embed.set_author(name=author_name, icon_url=avatar)
+            #avatar = None
+            #if user_message.author.avatar:
+                #avatar = user_message.author.avatar.url
+            #message_id = user_message.id
+            #author_name = user_message.author.name
+            #contents = user_message.content
+            embed = discord.Embed()#description=contents)
+            #embed.set_author(name=author_name, icon_url=avatar)
             embed.set_footer(
-                text="React with ✅ if you think this response was especially good or you'd like me to remember it"
+                text="I'm a Personate AI! You can create your own here: https://github.com/ckoshka/personate/"
             )
             agent_message.embeds = [embed]
             # return "agent_message", agent_message

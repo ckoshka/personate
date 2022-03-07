@@ -203,10 +203,6 @@ class AgentFrame:
         )
         self.turns[turn.id] = turn
 
-        await self.pre_translator.translate(
-            processed_user_message=turn.internal_message_user,
-            original_user_message=turn.external_message_user,
-        )
         if not self.memory:
             raise Exception("No memory set.")
         if not (
@@ -221,8 +217,15 @@ class AgentFrame:
         # logger.debug(f'Pronouns db: {self.memory.db.get("pronouns", None)}')
         # if pronouns:
         # turn.internal_message_user.name += f" ({pronouns})"
-        logger.debug(f"Name of user: {turn.internal_message_user.name}")
+        #logger.debug(f"Name of user: {turn.internal_message_user.name}")
+        #if not external_message_user.id in self.memory.db.keys():
+        await self.pre_translator.translate(
+            processed_user_message=turn.internal_message_user,
+            original_user_message=turn.external_message_user,
+        )
         self.memory.insert_message(external_message_user.id, turn.internal_message_user)
+        #else:
+            #turn.internal_message_user = self.memory.db[external_message_user.id]
 
         frame = self.frame.clone()
 
