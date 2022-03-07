@@ -230,7 +230,7 @@ class Agent:
     def run(self):
         while True:
             try:
-                asyncio.run(asyncio.wait_for(self.start(), timeout=300))
+                asyncio.run(asyncio.wait_for(self.start(), timeout=600))
                 self.bot.clear()
                 self.register_listeners()
             except asyncio.TimeoutError:
@@ -243,7 +243,7 @@ class Agent:
         @self.bot.listen("on_message")
         @self.activator.check(inputs=True, keyword="message")
         async def receive_messages(message: discord.Message):
-            asyncio.create_task(self.reply(message))
+            await asyncio.create_task(self.reply(message))
 
         @self.bot.listen("on_connect")
         async def register_cog():

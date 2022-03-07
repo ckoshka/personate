@@ -7,7 +7,7 @@ import types
 import discord
 from personate.swarm.internal_message import InternalMessage
 from acrossword import Ranker
-
+import random
 
 class Translator:
     def __init__(self) -> None:
@@ -79,16 +79,19 @@ class DiscordResponseTranslator(Translator):
         if agent_message and user_message:
             # logger.debug("Adding response embed to msg: {}".format(agent_message.__dict__))
             #avatar = None
-            #if user_message.author.avatar:
-                #avatar = user_message.author.avatar.url
+            if user_message.author.avatar:
+                avatar = user_message.author.avatar.url
+            else:
+                return
             #message_id = user_message.id
-            #author_name = user_message.author.name
+            author_name = user_message.author.name
             #contents = user_message.content
             embed = discord.Embed()#description=contents)
-            #embed.set_author(name=author_name, icon_url=avatar)
-            embed.set_footer(
-                text="I'm a Personate AI! You can create your own here: https://github.com/ckoshka/personate/"
-            )
+            embed.set_author(name=author_name, icon_url=avatar)
+            if random.random() > 0.86:
+                embed.set_footer(
+                    text="I'm an AI made using Personate, an open-source library that brings the power of making compelling chatbots to people without expensive equipment and specialised knowledge! You can create your own here: https://github.com/ckoshka/personate/"
+                )
             agent_message.embeds = [embed]
             # return "agent_message", agent_message
         else:

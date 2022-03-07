@@ -419,6 +419,8 @@ class Activator:
         async def checker(msg: discord.Message) -> bool:
             if f"@{name.lower()}" in msg.content.lower():
                 return True
+            if msg.embeds and msg.embeds[0].author.name == name:
+                return True
             try:
                 if msg.reference.resolved.author.name == name:  # type: ignore
                     return True
