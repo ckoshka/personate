@@ -70,7 +70,7 @@ class Agent:
         self.post_translator.add_translator(MessageTrimmerTranslator())
         self.post_translator.add_translator(DiscordResponseTranslator())
         self.document_collection = DocumentCollection(documents=[])
-        self.prompt: AgentFrame = AgentFrame(name=self.name, swarm=self.swarm)
+        self.prompt: AgentFrame = AgentFrame(name=self.name, swarm=self.swarm, parent=self)
         self.prompt.set_post_translator(self.post_translator)
         self.prompt.set_pre_translator(self.pre_translator)
         self.face: Optional[Face] = None
@@ -243,7 +243,7 @@ class Agent:
         @self.bot.listen("on_message")
         @self.activator.check(inputs=True, keyword="message")
         async def receive_messages(message: discord.Message):
-            await asyncio.create_task(self.reply(message))
+            asyncio.create_task(self.reply(message))
 
         @self.bot.listen("on_connect")
         async def register_cog():
@@ -304,16 +304,11 @@ class Agent:
         external_message_agent = await self.face.send_loading(
             external_message_user.channel
         )
-        internal_message_agent = await self.prompt.generate_reply(
+        async for e in self.prompt.translate_message_pair(
             external_message_agent=external_message_agent,
             external_message_user=external_message_user,
-        )
-        if isinstance(external_message_agent, discord.WebhookMessage):
-            await self.face.update(internal_message_agent, external_message_agent)
-            # Reply to self randomly
-            #await asyncio.sleep(random.random() * 3)
-            #if random.random() < 0.38:
-                #asyncio.create_task(self.reply(external_message_agent))
+        ):
+            pass
 
     def register_all(self):
         self.register_listeners()

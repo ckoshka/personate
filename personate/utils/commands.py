@@ -18,7 +18,7 @@ class CommandRegister:
             self.functions[self.prefix + funcname] = func
             if owner:
                 async def new_condition(m: discord.Message) -> bool:
-                    return condition(m) and isinstance(m.author, discord.User) and await self.bot.is_owner(m.author)
+                    return condition(m) and await self.bot.is_owner(m.author) #type: ignore
             else:
                 async def new_condition(m: discord.Message) -> bool:
                     return condition(m)
