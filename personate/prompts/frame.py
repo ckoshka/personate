@@ -110,7 +110,7 @@ class Turn:
 class AgentFrame:
     """Wraps and manages a Frame object, with the responsibility of setting its values."""
 
-    asyncer = Asynchronise(name="agent frame asyncer")
+    #asyncer = Asynchronise(name="agent frame asyncer")
 
     def __init__(self, name: str, swarm: Swarm, parent: Any, **kwargs):
         self.frame = Frame(
@@ -135,8 +135,9 @@ class AgentFrame:
         self.turns: Dict[int, Turn] = {}
         self.document_collection: Optional[DocumentCollection] = None
         self.max_characters: int = 1000
-        #self.asyncer = Asynchronise(name="agent frame asyncer")
         self.__dict__.update(kwargs)
+        self.asyncer = Asynchronise(name="agent frame asyncer")
+        self.register_listeners()
         # problem is copies and references. unclear as to how it should behave. clear? initialised each time? costly. would be convenient if memory retrieval, document search, and translation were all internal to the frame.
         # transformation + reordering.
 
@@ -284,162 +285,131 @@ class AgentFrame:
         )
         return turn.internal_message_agent
 
-    @asyncer.send
-    async def translate_message_pair(self: 'AgentFrame', external_message_user: discord.Message, external_message_agent: discord.Message):
-        yield external_message_user, "external_message_user"
-        yield external_message_agent, "external_message_agent"
-        internal_message_user = InternalMessage.from_discord_message(
-        external_message_user
-        )
-        internal_message_agent = InternalMessage.from_discord_message(
-            external_message_agent
-        )
-        await self.pre_translator.translate(
-        processed_user_message=internal_message_user,
-        original_user_message=external_message_user,
-        )
-        if not self.memory:
-            return
-        self.memory.insert_message(external_message_user.id, internal_message_user)
-        yield internal_message_user, "internal_message_user"
-        yield internal_message_agent, "internal_message_agent"
-        yield self, "self"
-
-    @asyncer.send
-    @asyncer.collect({
-        "self": (None, "self", None),
-        "internal_message_user": (InternalMessage, "internal_message_user", None)
-    })
-    async def get_current_conversation(self, internal_message_user: InternalMessage):
-        if not self.memory:
-            yield None, "current_conversation"
-            return
-        conversation = await self.memory.retrieve_reply_chain(
-            message=internal_message_user, max_characters=self.max_characters
-        )
-        yield "\n".join([str(c) for c in conversation]), "current_conversation"
-
-    @asyncer.send
-    @asyncer.collect({
-        "self": (None, "self", None),
-        "internal_message_user": (InternalMessage, "internal_message_user", None)
-    })
-    async def get_api_result(self, internal_message_user: InternalMessage):
-        api_result = await self.swarm.solve(internal_message_user.internal_content)
-        yield api_result, "api_result"
-
-    @asyncer.send
-    @asyncer.collect({
-        "self": (None, "self", None),
-        "current_conversation": (str, "current_conversation", None)
-    })
-    async def get_document_results(self, current_conversation: str):
-        if not self.document_collection:
-            yield None, "reading_cue"
-            return
-        top_results = [
-            r.replace("\n", " ")
-            for r in await self.document_collection.search(
-                current_conversation[-120:], top=3
+    async def translate_message_pair(self, external_message_user: discord.Message, external_message_agent: discord.Message):
+        @self.asyncer.send
+        async def translate_message_pair(external_message_user: discord.Message, external_message_agent: discord.Message):
+            yield external_message_user, "external_message_user"
+            yield external_message_agent, "external_message_agent"
+            internal_message_user = InternalMessage.from_discord_message(
+            external_message_user
             )
-        ]
-        yield "\n".join(top_results), "reading_cue"
+            internal_message_agent = InternalMessage.from_discord_message(
+                external_message_agent
+            )
+            await self.pre_translator.translate(
+            processed_user_message=internal_message_user,
+            original_user_message=external_message_user,
+            )
+            if not self.memory:
+                return
+            self.memory.insert_message(external_message_user.id, internal_message_user)
+            yield internal_message_user, "internal_message_user"
+            yield internal_message_agent, "internal_message_agent"
+        async for e in translate_message_pair(external_message_user, external_message_agent):
+            pass
 
-    @asyncer.send
-    @asyncer.collect({
-        "self": (None, "self", None),
-        "current_conversation": (str, "current_conversation", None),
-    })
-    async def get_examples(self, current_conversation: str):
-        if not self.examples:
-            yield None, "examples"
-            return
-        yield await self.examples.reordered(
-            query=current_conversation[-120:]
-        ), "examples"
+    def register_listeners(self):
 
-    @asyncer.send
-    @asyncer.collect({
-        "self": (None, "self", None),
-        "current_conversation": (str, "current_conversation", None),
-        "api_result": (str, "api_result", None),
-        "reading_cue": (str, "reading_cue", None),
-        "examples": (str, "examples", None)
-    })
-    async def get_frame(self, current_conversation: str, api_result: str, reading_cue: str, examples: str):
-        frame = self.frame.clone()
-        frame.field_values["current_conversation"] = current_conversation
-        if api_result:
-            frame.field_values["api_result"] = f'(API result: "{api_result}")'
-        if reading_cue:
-            frame.field_values["reading_cue"] = reading_cue
-        if examples:
-            frame.field_values["examples"] = examples
-        yield frame, "frame"
+        @self.asyncer.send
+        @self.asyncer.collect({
+            "internal_message_user": (InternalMessage, "internal_message_user", None)
+        })
+        async def get_current_conversation(internal_message_user: InternalMessage):
+            if not self.memory:
+                yield None, "current_conversation"
+                return
+            conversation = await self.memory.retrieve_reply_chain(
+                message=internal_message_user, max_characters=self.max_characters
+            )
+            yield "\n".join([str(c) for c in conversation]), "current_conversation"
 
-    @asyncer.send
-    @asyncer.collect({
-        "self": (None, "self", None),
-        "frame": (Frame, "frame", None)
-    })
-    async def get_completion(self, frame: Frame):
-        completion = await frame.complete()
-        yield completion, "completion"
+        @self.asyncer.send
+        @self.asyncer.collect({
+            "internal_message_user": (InternalMessage, "internal_message_user", None)
+        })
+        async def get_api_result(internal_message_user: InternalMessage):
+            api_result = await self.swarm.solve(internal_message_user.internal_content)
+            yield api_result, "api_result"
 
-    @asyncer.send
-    @asyncer.collect({
-        "self": (None, "self", None),
-        "current_conversation": (str, "current_conversation", None),
-        "api_result": (None, "api_result", None),
-        "reading_cue": (None, "reading_cue", None)
-    })
-    async def construct_frame(self, current_conversation: str, api_result: str, reading_cue: str):
-        frame = self.frame.clone()
-        frame.field_values["current_conversation"] = current_conversation
-        if api_result:
-            frame.field_values["api_result"] = f'(API result: "{api_result}")'
-        if reading_cue:
-            frame.field_values["examples"] = reading_cue
-        yield frame, "frame"
+        @self.asyncer.send
+        @self.asyncer.collect({
+            "current_conversation": (str, "current_conversation", None)
+        })
+        async def get_document_results(current_conversation: str):
+            if not self.document_collection:
+                yield None, "reading_cue"
+                return
+            top_results = [
+                r.replace("\n", " ")
+                for r in await self.document_collection.search(
+                    current_conversation[-120:], top=3
+                )
+            ]
+            yield "\n".join(top_results), "reading_cue"
 
-    @asyncer.send
-    @asyncer.collect({
-        "self": (None, "self", None),
-        "frame": (Frame, "frame", None)
-    })
-    async def complete_frame(self, frame: Frame):
-        yield await frame.complete(), "completion"
+        @self.asyncer.send
+        @self.asyncer.collect({
+            "current_conversation": (str, "current_conversation", None),
+        })
+        async def get_examples(current_conversation: str):
+            yield await self.examples.reordered(
+                query=current_conversation[-120:]
+            ), "examples"
 
-    @asyncer.send
-    @asyncer.collect({
-        "self": (None, "self", None),
-        "internal_message_agent": (InternalMessage, "internal_message_agent", None),
-        "completion": (str, "completion", None),
-        "external_message_user": (discord.Message, "external_message_user", None)
-    })
-    async def post_translation(self, internal_message_agent: InternalMessage, completion: str, external_message_user: discord.Message):
-        internal_message_agent.reply_to = external_message_user.id
-        internal_message_agent.external_content = completion
-        internal_message_agent.internal_content = completion
-        internal_message_agent.name = self.name
-        await self.post_translator.translate(
-            completion=completion,
-            agent_message=internal_message_agent,
-            user_message=external_message_user,
-            processed_user_message=internal_message_agent,
-        )
-        yield internal_message_agent, "internal_message_agent_complete"
-        if not self.memory:
-            return
-        self.memory.insert_message(
-            internal_message_agent.id, internal_message_agent
-        )
+        @self.asyncer.send
+        @self.asyncer.collect({
+            "current_conversation": (str, "current_conversation", None),
+            "api_result": (None, "api_result", None),
+            "reading_cue": (None, "reading_cue", None),
+            "examples": (None, "examples", None)
+        })
+        async def get_frame(current_conversation: str, api_result: str, reading_cue: str, examples: str):
+            frame = self.frame.clone()
+            frame.field_values["current_conversation"] = current_conversation
+            if api_result:
+                frame.field_values["api_result"] = f'(API result: "{api_result}")'
+            if reading_cue:
+                frame.field_values["reading_cue"] = reading_cue
+            if examples:
+                frame.field_values["examples"] = examples
+            yield frame, "frame"
 
-    @asyncer.collect({
-        "self": (None, "self", None),
-        "internal_message_agent": (InternalMessage, "internal_message_agent_complete", None),
-        "external_message_agent": (discord.Message, "external_message_agent", None)
-    })
-    async def post_message(self, internal_message_agent: InternalMessage, external_message_agent: discord.Message):
-        if isinstance(external_message_agent, discord.WebhookMessage):
-            await self.parent.face.update(internal_message_agent, external_message_agent)
+        @self.asyncer.send
+        @self.asyncer.collect({
+            "frame": (Frame, "frame", None)
+        })
+        async def get_completion(frame: Frame):
+            completion = await frame.complete()
+            yield completion, "completion"
+
+        @self.asyncer.send
+        @self.asyncer.collect({
+            "internal_message_agent": (InternalMessage, "internal_message_agent", None),
+            "completion": (str, "completion", None),
+            "external_message_user": (discord.Message, "external_message_user", None)
+        })
+        async def post_translation(internal_message_agent: InternalMessage, completion: str, external_message_user: discord.Message):
+            internal_message_agent.reply_to = external_message_user.id
+            internal_message_agent.external_content = completion
+            internal_message_agent.internal_content = completion
+            internal_message_agent.name = self.name
+            await self.post_translator.translate(
+                completion=completion,
+                agent_message=internal_message_agent,
+                user_message=external_message_user,
+                processed_user_message=internal_message_agent,
+            )
+            yield internal_message_agent, "internal_message_agent_complete"
+            if not self.memory:
+                return
+            self.memory.insert_message(
+                internal_message_agent.id, internal_message_agent
+            )
+
+        @self.asyncer.collect({
+            "internal_message_agent": (InternalMessage, "internal_message_agent_complete", None),
+            "external_message_agent": (discord.Message, "external_message_agent", None)
+        })
+        async def post_message(internal_message_agent: InternalMessage, external_message_agent: discord.Message):
+            if isinstance(external_message_agent, discord.WebhookMessage):
+                await self.parent.face.update(internal_message_agent, external_message_agent)

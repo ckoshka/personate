@@ -304,11 +304,10 @@ class Agent:
         external_message_agent = await self.face.send_loading(
             external_message_user.channel
         )
-        async for e in self.prompt.translate_message_pair(
+        await self.prompt.translate_message_pair(
             external_message_agent=external_message_agent,
             external_message_user=external_message_user,
-        ):
-            pass
+        )
 
     def register_all(self):
         self.register_listeners()
