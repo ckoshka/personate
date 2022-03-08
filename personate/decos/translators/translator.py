@@ -82,7 +82,7 @@ class DiscordResponseTranslator(Translator):
             if user_message.author.avatar:
                 avatar = user_message.author.avatar.url
             else:
-                return
+                avatar = None
             #message_id = user_message.id
             author_name = user_message.author.name
             #contents = user_message.content
