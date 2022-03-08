@@ -230,7 +230,7 @@ class Agent:
     def run(self):
         while True:
             try:
-                asyncio.run(asyncio.wait_for(self.start(), timeout=600))
+                asyncio.run(asyncio.wait_for(self.start(), timeout=400))
                 self.bot.clear()
                 self.register_listeners()
             except asyncio.TimeoutError:

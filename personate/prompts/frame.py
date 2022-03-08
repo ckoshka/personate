@@ -349,6 +349,50 @@ class AgentFrame:
     @asyncer.collect({
         "self": (None, "self", None),
         "current_conversation": (str, "current_conversation", None),
+    })
+    async def get_examples(self, current_conversation: str):
+        if not self.examples:
+            yield None, "examples"
+            return
+        yield await self.examples.reordered(
+            query=current_conversation[-120:]
+        ), "examples"
+
+    @asyncer.send
+    @asyncer.collect({
+        "self": (None, "self", None),
+        "current_conversation": (str, "current_conversation", None),
+        "api_result": (str, "api_result", None),
+        "reading_cue": (str, "reading_cue", None),
+        "examples": (str, "examples", None)
+    })
+    async def get_frame(self, current_conversation: str, api_result: str, reading_cue: str, examples: str):
+        frame = self.frame.clone()
+        frame.field_values["current_conversation"] = current_conversation
+        if api_result:
+            frame.field_values["api_result"] = f'(API result: "{api_result}")'
+        if reading_cue:
+            frame.field_values["reading_cue"] = reading_cue
+        if examples:
+            frame.field_values["examples"] = examples
+        yield frame, "frame"
+
+    @asyncer.send
+    @asyncer.collect({
+        "self": (None, "self", None),
+        "frame": (Frame, "frame", None)
+    })
+    async def get_completion(self, frame: Frame):
+        completion = await frame.complete()
+        yield completion, "completion"
+
+    @asyncer.send
+    @asyncer.collect({
+
+    @asyncer.send
+    @asyncer.collect({
+        "self": (None, "self", None),
+        "current_conversation": (str, "current_conversation", None),
         "api_result": (None, "api_result", None),
         "reading_cue": (None, "reading_cue", None)
     })
