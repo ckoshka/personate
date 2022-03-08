@@ -388,9 +388,6 @@ class AgentFrame:
 
     @asyncer.send
     @asyncer.collect({
-
-    @asyncer.send
-    @asyncer.collect({
         "self": (None, "self", None),
         "current_conversation": (str, "current_conversation", None),
         "api_result": (None, "api_result", None),
