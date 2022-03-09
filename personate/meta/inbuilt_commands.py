@@ -20,7 +20,6 @@ import ujson as json
 from acrossword import Document
 from acrossword.documents.documents import DocumentCollection
 from discord import commands
-from discord.cog import Cog
 from personate.decos.translators.translator import EmojiTranslator
 from personate.meta.standard.agents import Agent
 from personate.utils.logger import logger
@@ -33,10 +32,10 @@ def to_list(item: str) -> List[str]:
 from personate.utils.commands import CommandRegister
 
 def make_agent_modifier(
-    bot: discord.Bot, agent: Agent, agent_dir: str, guild_ids: List[int]
-) -> Cog:
+    bot: discord.Bot, agent: Agent, agent_dir: str
+):
     cr = CommandRegister(bot=bot, name=agent.name)
-    class AgentModifier(Cog):
+    class AgentModifier:
         def __init__(self, bot: discord.Bot, agent: Agent, agent_dir: str) -> None:
             self.bot: discord.Bot = bot
             self.agent: Agent = agent

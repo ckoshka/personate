@@ -34,6 +34,7 @@ from personate.prompts.frame import AgentFrame
 
 
 class Agent:
+    __instances__ = []
     def __init__(
         self,
         name: str,
@@ -76,8 +77,10 @@ class Agent:
         self.face: Optional[Face] = None
         self.document_queue: List[Coroutine] = []
         self.memory: Optional[Memory] = None
+        self.modifier = None
         self.register_all()
         self.__dict__.update(kwargs)
+        self.__instances__.append(self)
 
     def add_pre_translator(self, translator: Translator) -> None:
         self.pre_translator.add_translator(translator)
@@ -217,12 +220,15 @@ class Agent:
                     "Unrecognised file format. Try labelling it as either a .txt if it's plaintext or a .json if it's been precomputed. pdfs don't work."
                 )
 
-    async def start(self):
-        # tasks: List[Union[Coroutine, asyncio.Future]] = []
+    async def assemble_documents(self):
         documents: tuple[Document] = await asyncio.gather(*self.document_queue)
         self.document_queue.clear()
         self.document_collection.extend_documents(list(documents))
         self.prompt.set_document_collection(self.document_collection)
+
+    async def start(self):
+        # tasks: List[Union[Coroutine, asyncio.Future]] = []
+        await self.assemble_documents()
         await self.bot.start(self.token)
 
         # asyncio.gather(*tasks)
@@ -233,6 +239,28 @@ class Agent:
                 asyncio.run(asyncio.wait_for(self.start(), timeout=400))
                 self.bot.clear()
                 self.register_listeners()
+            except asyncio.TimeoutError:
+                continue
+
+    @classmethod
+    async def start_all(cls, bot: Optional[discord.Bot] = None, token: Optional[str] = None):
+        instances = cls.__instances__
+        if bot and token:
+            await asyncio.gather(*[instance.assemble_documents() for instance in instances])
+            await bot.start(token)
+            return
+        else:
+            await asyncio.gather(*[instance.start() for instance in instances])
+    
+    @classmethod
+    def run_all(cls, bot: Optional[discord.Bot] = None, token: Optional[str] = None):
+        instances = cls.__instances__
+        while True:
+            try:
+                asyncio.run(asyncio.wait_for(cls.start_all(bot, token), timeout=400))
+                for agent in instances:
+                    agent.bot.clear()
+                    agent.register_listeners()
             except asyncio.TimeoutError:
                 continue
 
@@ -248,20 +276,10 @@ class Agent:
         @self.bot.listen("on_connect")
         async def register_cog():
             logger.debug(f"{self.name} is ready.")
-            from personate.meta.inbuilt_commands import make_agent_modifier
-            logger.debug(f"{self.name} is registering inbuilt commands.")
-
-            if not "AgentModifier" in self.bot.cogs.keys():
-                logger.debug("Adding AgentModifier cog")
-                guild_ids = [
-                    g.id for g in await self.bot.fetch_guilds(limit=150).flatten()
-                ]
-                self.bot.add_cog(
-                    make_agent_modifier(self.bot, self, self.agent_dir, guild_ids)
-                )
-                logger.debug(f"{self.name} registered AgentModifier cog")
-            else:
-                logger.debug("AgentModifier already registered")
+            if not self.modifier:
+                from personate.meta.inbuilt_commands import make_agent_modifier
+                self.modifier = make_agent_modifier(self.bot, self, self.agent_dir)
+                logger.debug(f"{self.name} is registering inbuilt commands.")
 
         @self.bot.listen("on_reaction_add")
         async def receive_reacts(reaction: discord.Reaction, user: discord.User):

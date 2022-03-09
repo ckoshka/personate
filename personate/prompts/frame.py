@@ -369,7 +369,7 @@ class AgentFrame:
             if api_result:
                 frame.field_values["api_result"] = f'(API result: "{api_result}")'
             if reading_cue:
-                frame.field_values["reading_cue"] = reading_cue
+                frame.field_values["reading_cue"] = f'(Here, {self.name} uses this as a source: "{reading_cue}")'
             if examples:
                 frame.field_values["examples"] = examples
             yield frame, "frame"

@@ -25,6 +25,8 @@ class CommandRegister:
             self.conditions[self.prefix + func.__name__] = new_condition
             async def inner(*args, **kwargs):
                 ctx = kwargs.pop("ctx")
+                logger.debug(f"Arguments: {args}")
+                logger.debug(f"Keyword arguments: {kwargs}")
                 result = await func(*args, **kwargs)
                 if result:
                     await ctx.channel.send("```" + result + "```")
@@ -69,11 +71,11 @@ class CommandRegister:
             args: list[str] = ast.literal_eval(content)
             logger.debug(f"Args: {args}")
             if self.tied_to:
-                await func(self.tied_to, ctx=msg, *args)
+                await func(self.tied_to, msg, *args, ctx=msg)
             else:
-                await func(ctx=msg, *args)
+                await func(msg, *args, ctx=msg)
         else:
             if self.tied_to:
-                await func(self.tied_to, content, ctx=msg)
+                await func(self.tied_to, msg, content, ctx=msg)
             else:
-                await func(content, ctx=msg)
+                await func(msg, content, ctx=msg)
