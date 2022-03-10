@@ -29,12 +29,13 @@ from personate.utils.username_generator import username_generator
 def to_list(item: str) -> List[str]:
     return item.split("\n")
 
+
 from personate.utils.commands import CommandRegister
 
-def make_agent_modifier(
-    bot: discord.Bot, agent: Agent, agent_dir: str
-):
+
+def make_agent_modifier(bot: discord.Bot, agent: Agent, agent_dir: str):
     cr = CommandRegister(bot=bot, name=agent.name)
+
     class AgentModifier:
         def __init__(self, bot: discord.Bot, agent: Agent, agent_dir: str) -> None:
             self.bot: discord.Bot = bot
@@ -132,9 +133,7 @@ def make_agent_modifier(
                     json.dump(data, f)
 
         @cr.register(owner=True)
-        async def teachemoji(
-            self, ctx: discord.Message, emoji: str, description: str
-        ):
+        async def teachemoji(self, ctx: discord.Message, emoji: str, description: str):
             await ctx.channel.send(f"Setting emoji to {emoji}")
             retrieved_translator = self.agent.post_translator.retrieve_by_classname(
                 "EmojiTranslator"
@@ -181,6 +180,29 @@ def make_agent_modifier(
                     "pre_conversation_annotation"
                 ] += f"\n(Note: in this conversation, we skillfully direct the conversation to attempt to {goal})"
             await ctx.channel.send(f"Changed goal to: {goal}")
+
+            "  MISSION: "
+
+        @cr.register(owner=True)
+        async def addmission(self, ctx: discord.Message, goal: str):
+            last_line = self.agent.prompt.frame.field_values[
+                "pre_conversation_annotation"
+            ]
+            if not isinstance(last_line, str):
+                return
+            last_line = last_line.split("\n\n")[-1]
+            if "MISSION:" in last_line:
+                self.agent.prompt.frame.field_values[
+                    "pre_conversation_annotation"
+                ] = last_line.replace(
+                    last_line,
+                    f"(MISSION: {goal})",
+                )
+            else:
+                self.agent.prompt.frame.field_values[
+                    "pre_conversation_annotation"
+                ] += f"\n(MISSION: {goal})"
+            await ctx.channel.send(f"Changed mission to: {goal}")
 
     am = AgentModifier(bot=bot, agent=agent, agent_dir=agent_dir)
     cr.tied_to = am

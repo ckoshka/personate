@@ -109,3 +109,16 @@ class Face:
                 embeds=agent_message.embeds,
                 files=files,
             )
+    #await self.parent.face.reply_and_delete(internal_message_agent, external_message_agent, external_message_user)
+
+    async def reply_and_delete(
+        self,
+        internal_message_agent: InternalMessage,
+        external_message_agent: discord.WebhookMessage,
+        external_message_user: discord.Message,
+    ):
+        await external_message_agent.delete()
+        await external_message_user.reply(
+            content=internal_message_agent.external_content,
+            embed=internal_message_agent.embeds[0],
+        )

@@ -7,7 +7,7 @@ async def default_generator_api(prompt: str) -> str:
     :return: The text of the prompt."""
     res = await get(
         prompt=prompt,
-        stops=[">:", "From Discord", "From IRC", "\n(", "> :", ">", "(Sources"],
+        stops=[">:", "From Discord", "From IRC", "\n(", "(", "> :", ">", "(Sources"],
         max=250,
         presence_penalty=0.23,
         temp=0.865,

@@ -41,6 +41,7 @@ class Agent:
         token: str,
         agent_dir: str,
         json_path: Optional[str] = None,
+        no_webhooks: bool = False,
         **kwargs: dict,
     ) -> None:
         self.asyn = Asynchronise()
@@ -57,6 +58,7 @@ class Agent:
             heartbeat_timeout=13,
             intents=discord.Intents.all(),
         )
+        self.no_webhooks = no_webhooks
         self.token = token
         self.name = name
         self.activator = Activator()
@@ -258,10 +260,10 @@ class Agent:
         while True:
             try:
                 asyncio.run(asyncio.wait_for(cls.start_all(bot, token), timeout=400))
+            except asyncio.TimeoutError:
                 for agent in instances:
                     agent.bot.clear()
                     agent.register_listeners()
-            except asyncio.TimeoutError:
                 continue
 
     async def add_document(self, doc: Document):
@@ -272,6 +274,12 @@ class Agent:
         @self.activator.check(inputs=True, keyword="message")
         async def receive_messages(message: discord.Message):
             asyncio.create_task(self.reply(message))
+
+        @self.bot.listen("on_message_edit")
+        @self.activator.check(inputs=True, keyword="after")
+        async def receive_edited_messages(before: discord.Message, after: discord.Message):
+            if after:
+                asyncio.create_task(self.reply(after))
 
         @self.bot.listen("on_connect")
         async def register_cog():
@@ -315,10 +323,20 @@ class Agent:
     async def reply(self, external_message_user: discord.Message):
         if (
             not isinstance(external_message_user.channel, discord.TextChannel)
-            or not self.face
+            or not self.face or not self.memory
         ):
             return
-
+        current_message = external_message_user
+        # Retrieves the reply-chain, if there is one.
+        ref = current_message.reference
+        while ref:
+            if isinstance(ref.resolved, discord.Message):
+                ref_msg = ref.resolved
+                internal_ref_msg = InternalMessage.from_discord_message(ref_msg)
+                self.memory.insert_message(ref_msg.id, internal_ref_msg)
+                ref = ref_msg.reference
+            else:
+                break
         external_message_agent = await self.face.send_loading(
             external_message_user.channel
         )

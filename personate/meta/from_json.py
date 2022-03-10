@@ -14,7 +14,7 @@ import importlib.resources
 
 class AgentFromJSON:
     available_presets = set(
-        ["chatbot", "entity", "fictional_character", "historical_person", "assistant"]
+        ["chatbot", "entity", "fictional_character", "historical_person", "assistant", "dm"]
     )
 
     available_preprocessors = ["translate", "images-to-text"]
@@ -33,6 +33,7 @@ class AgentFromJSON:
         reads = data.get("reads", False)
         debug = data.get("debug", False)
         preset = data.get("preset", None)
+        no_webhooks: bool = data.get("no_webhooks", False)
         logger.debug(
             f"Initialising agent from json with {name}, {token}, {reads}, {debug}, {preset}"
         )
@@ -59,6 +60,7 @@ class AgentFromJSON:
             token=token,
             agent_dir=home_dir,
             json_path=json_path,
+            no_webhooks=no_webhooks,
         )
 
         template_path = "personate.meta.templates.{}".format(preset)
@@ -129,7 +131,7 @@ class AgentFromJSON:
             logger.debug(f"Using activator {act}")
 
         examples = data.get("examples", [])
-        if not examples:
+        if not examples and not preset == "dm":
             raise ValueError(
                 "You need to specify some examples to use for your agent to show how it should react and behave."
             )

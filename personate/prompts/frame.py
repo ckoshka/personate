@@ -110,7 +110,7 @@ class Turn:
 class AgentFrame:
     """Wraps and manages a Frame object, with the responsibility of setting its values."""
 
-    #asyncer = Asynchronise(name="agent frame asyncer")
+    # asyncer = Asynchronise(name="agent frame asyncer")
 
     def __init__(self, name: str, swarm: Swarm, parent: Any, **kwargs):
         self.frame = Frame(
@@ -285,35 +285,44 @@ class AgentFrame:
         )
         return turn.internal_message_agent
 
-    async def translate_message_pair(self, external_message_user: discord.Message, external_message_agent: discord.Message):
+    async def translate_message_pair(
+        self,
+        external_message_user: discord.Message,
+        external_message_agent: discord.Message,
+    ):
         @self.asyncer.send
-        async def translate_message_pair(external_message_user: discord.Message, external_message_agent: discord.Message):
+        async def translate_message_pair(
+            external_message_user: discord.Message,
+            external_message_agent: discord.Message,
+        ):
             yield external_message_user, "external_message_user"
             yield external_message_agent, "external_message_agent"
             internal_message_user = InternalMessage.from_discord_message(
-            external_message_user
+                external_message_user
             )
             internal_message_agent = InternalMessage.from_discord_message(
                 external_message_agent
             )
             await self.pre_translator.translate(
-            processed_user_message=internal_message_user,
-            original_user_message=external_message_user,
+                processed_user_message=internal_message_user,
+                original_user_message=external_message_user,
             )
             if not self.memory:
                 return
             self.memory.insert_message(external_message_user.id, internal_message_user)
             yield internal_message_user, "internal_message_user"
             yield internal_message_agent, "internal_message_agent"
-        async for e in translate_message_pair(external_message_user, external_message_agent):
+
+        async for e in translate_message_pair(
+            external_message_user, external_message_agent
+        ):
             pass
 
     def register_listeners(self):
-
         @self.asyncer.send
-        @self.asyncer.collect({
-            "internal_message_user": (InternalMessage, "internal_message_user", None)
-        })
+        @self.asyncer.collect(
+            {"internal_message_user": (InternalMessage, "internal_message_user", None)}
+        )
         async def get_current_conversation(internal_message_user: InternalMessage):
             if not self.memory:
                 yield None, "current_conversation"
@@ -324,17 +333,17 @@ class AgentFrame:
             yield "\n".join([str(c) for c in conversation]), "current_conversation"
 
         @self.asyncer.send
-        @self.asyncer.collect({
-            "internal_message_user": (InternalMessage, "internal_message_user", None)
-        })
+        @self.asyncer.collect(
+            {"internal_message_user": (InternalMessage, "internal_message_user", None)}
+        )
         async def get_api_result(internal_message_user: InternalMessage):
             api_result = await self.swarm.solve(internal_message_user.internal_content)
             yield api_result, "api_result"
 
         @self.asyncer.send
-        @self.asyncer.collect({
-            "current_conversation": (str, "current_conversation", None)
-        })
+        @self.asyncer.collect(
+            {"current_conversation": (str, "current_conversation", None)}
+        )
         async def get_document_results(current_conversation: str):
             if not self.document_collection:
                 yield None, "reading_cue"
@@ -348,47 +357,67 @@ class AgentFrame:
             yield "\n".join(top_results), "reading_cue"
 
         @self.asyncer.send
-        @self.asyncer.collect({
-            "current_conversation": (str, "current_conversation", None),
-        })
+        @self.asyncer.collect(
+            {
+                "current_conversation": (str, "current_conversation", None),
+            }
+        )
         async def get_examples(current_conversation: str):
             yield await self.examples.reordered(
                 query=current_conversation[-120:]
             ), "examples"
 
         @self.asyncer.send
-        @self.asyncer.collect({
-            "current_conversation": (str, "current_conversation", None),
-            "api_result": (None, "api_result", None),
-            "reading_cue": (None, "reading_cue", None),
-            "examples": (None, "examples", None)
-        })
-        async def get_frame(current_conversation: str, api_result: str, reading_cue: str, examples: str):
+        @self.asyncer.collect(
+            {
+                "current_conversation": (str, "current_conversation", None),
+                "api_result": (None, "api_result", None),
+                "reading_cue": (None, "reading_cue", None),
+                "examples": (None, "examples", None),
+            }
+        )
+        async def get_frame(
+            current_conversation: str, api_result: str, reading_cue: str, examples: str
+        ):
             frame = self.frame.clone()
             frame.field_values["current_conversation"] = current_conversation
             if api_result:
                 frame.field_values["api_result"] = f'(API result: "{api_result}")'
             if reading_cue:
-                frame.field_values["reading_cue"] = f'(Here, {self.name} uses this as a source: "{reading_cue}")'
+                frame.field_values[
+                    "reading_cue"
+                ] = f'(Source: "{reading_cue}")'
             if examples:
                 frame.field_values["examples"] = examples
             yield frame, "frame"
 
         @self.asyncer.send
-        @self.asyncer.collect({
-            "frame": (Frame, "frame", None)
-        })
+        @self.asyncer.collect({"frame": (Frame, "frame", None)})
         async def get_completion(frame: Frame):
             completion = await frame.complete()
             yield completion, "completion"
 
         @self.asyncer.send
-        @self.asyncer.collect({
-            "internal_message_agent": (InternalMessage, "internal_message_agent", None),
-            "completion": (str, "completion", None),
-            "external_message_user": (discord.Message, "external_message_user", None)
-        })
-        async def post_translation(internal_message_agent: InternalMessage, completion: str, external_message_user: discord.Message):
+        @self.asyncer.collect(
+            {
+                "internal_message_agent": (
+                    InternalMessage,
+                    "internal_message_agent",
+                    None,
+                ),
+                "completion": (str, "completion", None),
+                "external_message_user": (
+                    discord.Message,
+                    "external_message_user",
+                    None,
+                ),
+            }
+        )
+        async def post_translation(
+            internal_message_agent: InternalMessage,
+            completion: str,
+            external_message_user: discord.Message,
+        ):
             internal_message_agent.reply_to = external_message_user.id
             internal_message_agent.external_content = completion
             internal_message_agent.internal_content = completion
@@ -406,10 +435,38 @@ class AgentFrame:
                 internal_message_agent.id, internal_message_agent
             )
 
-        @self.asyncer.collect({
-            "internal_message_agent": (InternalMessage, "internal_message_agent_complete", None),
-            "external_message_agent": (discord.Message, "external_message_agent", None)
-        })
-        async def post_message(internal_message_agent: InternalMessage, external_message_agent: discord.Message):
+        @self.asyncer.collect(
+            {
+                "internal_message_agent": (
+                    InternalMessage,
+                    "internal_message_agent_complete",
+                    None,
+                ),
+                "external_message_agent": (
+                    discord.Message,
+                    "external_message_agent",
+                    None,
+                ),
+                "external_message_user": (
+                    discord.Message,
+                    "external_message_user",
+                    None,
+                ),
+            }
+        )
+        async def post_message(
+            internal_message_agent: InternalMessage,
+            external_message_agent: discord.Message,
+            external_message_user: discord.Message,
+        ):
+            if self.parent.no_webhooks:
+                await self.parent.face.reply_and_delete(
+                    internal_message_agent,
+                    external_message_agent,
+                    external_message_user,
+                )
+                return
             if isinstance(external_message_agent, discord.WebhookMessage):
-                await self.parent.face.update(internal_message_agent, external_message_agent)
+                await self.parent.face.update(
+                    internal_message_agent, external_message_agent
+                )
