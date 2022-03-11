@@ -83,15 +83,12 @@ class DiscordResponseTranslator(Translator):
                 avatar = user_message.author.avatar.url
             else:
                 avatar = "https://www.google.com/nothing.png"
-            #message_id = user_message.id
+            message_id = user_message.id
             author_name = user_message.author.name
-            #contents = user_message.content
-            embed = discord.Embed()#description=contents)
+            contents = user_message.content
+            embed = discord.Embed(description=contents)
             embed.set_author(name=author_name, icon_url=avatar)
-            if random.random() > 0.86:
-                embed.set_footer(
-                    text="I'm an AI made using Personate, an open-source library that brings the power of making compelling chatbots to people without expensive equipment and specialised knowledge! You can create your own here: https://github.com/ckoshka/personate/"
-                )
+            embed.set_footer(text=message_id)
             agent_message.embeds = [embed]
             # return "agent_message", agent_message
         else:

@@ -230,7 +230,8 @@ class AgentFrame:
             processed_user_message=turn.internal_message_user,
             original_user_message=turn.external_message_user,
         )
-        self.memory.insert_message(external_message_user.id, turn.internal_message_user)
+        if not external_message_user.id in self.memory.db.keys():
+            self.memory.insert_message(external_message_user.id, turn.internal_message_user)
         # else:
         # turn.internal_message_user = self.memory.db[external_message_user.id]
 
@@ -297,9 +298,22 @@ class AgentFrame:
         ):
             yield external_message_user, "external_message_user"
             yield external_message_agent, "external_message_agent"
-            internal_message_user = InternalMessage.from_discord_message(
-                external_message_user
-            )
+            if not self.memory:
+                return
+            if not external_message_user.id in self.memory.db.keys():
+                internal_message_user = InternalMessage.from_discord_message(
+                    external_message_user
+                )
+                try:
+                    reply_to = int(str(external_message_user.embeds[0].footer.text))
+                    internal_message_user.reply_to = reply_to
+                    logger.debug("I found a message by a Personate chatbot and added a reply to it")
+                except:
+                    pass
+                logger.debug(f"User message was not in db: {internal_message_user}")
+            else:
+                internal_message_user = self.memory.db[external_message_user.id]
+                logger.debug(f"User message was in db: {internal_message_user}")
             internal_message_agent = InternalMessage.from_discord_message(
                 external_message_agent
             )
@@ -307,8 +321,6 @@ class AgentFrame:
                 processed_user_message=internal_message_user,
                 original_user_message=external_message_user,
             )
-            if not self.memory:
-                return
             self.memory.insert_message(external_message_user.id, internal_message_user)
             yield internal_message_user, "internal_message_user"
             yield internal_message_agent, "internal_message_agent"

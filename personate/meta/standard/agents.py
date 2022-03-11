@@ -80,6 +80,7 @@ class Agent:
         self.document_queue: List[Coroutine] = []
         self.memory: Optional[Memory] = None
         self.modifier = None
+        self.improv_generator = None
         self.register_all()
         self.__dict__.update(kwargs)
         self.__instances__.append(self)
@@ -287,7 +288,11 @@ class Agent:
             if not self.modifier:
                 from personate.meta.inbuilt_commands import make_agent_modifier
                 self.modifier = make_agent_modifier(self.bot, self, self.agent_dir)
-                logger.debug(f"{self.name} is registering inbuilt commands.")
+                logger.debug(f"{self.name} registered inbuilt commands.")
+            if not self.improv_generator:
+                from personate.meta.improv_scenes import ImprovGenerator
+                self.improv_generator = ImprovGenerator(self)
+                logger.debug(f"{self.name} registered improv generator.")
 
         @self.bot.listen("on_reaction_add")
         async def receive_reacts(reaction: discord.Reaction, user: discord.User):
@@ -326,17 +331,8 @@ class Agent:
             or not self.face or not self.memory
         ):
             return
-        current_message = external_message_user
+        asyncio.create_task(add_replies_to_memory(self.memory, external_message_user, self.name))
         # Retrieves the reply-chain, if there is one.
-        ref = current_message.reference
-        while ref:
-            if isinstance(ref.resolved, discord.Message):
-                ref_msg = ref.resolved
-                internal_ref_msg = InternalMessage.from_discord_message(ref_msg)
-                self.memory.insert_message(ref_msg.id, internal_ref_msg)
-                ref = ref_msg.reference
-            else:
-                break
         external_message_agent = await self.face.send_loading(
             external_message_user.channel
         )
@@ -347,3 +343,18 @@ class Agent:
 
     def register_all(self):
         self.register_listeners()
+
+async def add_replies_to_memory(memory: Memory, message: discord.Message, name: str):
+    last_20_messages = await message.channel.history(limit=10).flatten()
+    for msg in last_20_messages:
+        internal_msg = InternalMessage.from_discord_message(msg)
+        try:
+            reply_to = int(str(msg.embeds[0].footer.text))
+            internal_msg.reply_to = reply_to
+            logger.debug("I found a message by a Personate chatbot and added a reply to it")
+        except:
+            pass
+        if not msg.id in memory.db.keys() and msg.author.name != name:
+            memory.db[msg.id] = internal_msg
+        else:
+            logger.debug(f"I already have a message with id {internal_msg.id}")
