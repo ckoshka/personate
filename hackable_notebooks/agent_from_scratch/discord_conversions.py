@@ -2,10 +2,11 @@
 # optional: uvloop makes stuff go around 3-4 times faster
 #import uvloop
 #uvloop.install()
+import random
 import regex as re
 import discord
 import asyncio
-from typing import Callable, Optional
+from typing import Callable, Dict, Optional, Union, List, Set
 
 AGENT_PREFIX = "&"
 
@@ -74,8 +75,93 @@ def embed_from_msg(msg: discord.Message):
     return embed
     # This adds an embed to discord messages which allows Agents to figure out who the hell they were replying to. It's an alternative to using Memory
 
-from personate.face.face2 import Face
-from acrossword import Ranker
+class UpdateableMessageWrapper:
+    '''This contains a discord.WebhookMessage or a discord.Message object, and has a method for updating its content, by passing down the kwargs from the call.'''
+    def __init__(self, message: discord.Message):
+        self.message = message
+    async def update(self, **kwargs):
+        return await self.message.edit(**kwargs)
+
+class Face:
+    """
+    This is maybe one of the simplest classes in the library. It manages webhooks and posts as the webhook with a specific appearance (avatar_url and username).
+    """
+
+    def __init__(
+        self,
+        bot: discord.Bot,
+        avatar_url: str,
+        username: str,
+        loading_message: Optional[Union[List[str], str]] = None,
+    ):
+        self.bot = bot
+        self.avatar_url = avatar_url
+        self.username = username
+        self.loading_message = loading_message
+        self.webhooks: Dict[int, discord.Webhook] = {}
+
+
+    async def get_webhook(self, channel_id: int) -> Optional[discord.Webhook]:
+        channel = self.bot.get_channel(channel_id)
+        if isinstance(channel, discord.TextChannel):
+
+            def predicate(webhook: discord.Webhook):
+                return webhook.user == self.bot.user
+
+            webhooks: List[discord.Webhook] = await channel.webhooks()
+            webhook = discord.utils.find(lambda m: predicate(m), webhooks)
+            if not webhook:
+                if self.bot.user:
+                    try:
+                        webhook = await channel.create_webhook(name=self.bot.user.name)
+                    except discord.HTTPException:
+                        pass
+            if webhook:
+                return webhook
+        return None
+
+    async def send_custom(
+        self,
+        channel_id: int,
+        content: str,
+        avatar_url: str,
+        username: str,
+        **kwargs,
+    ) -> UpdateableMessageWrapper:
+        """Flexible method that handles different cases."""
+        channel = self.bot.get_channel(channel_id)
+        if not isinstance(channel, discord.TextChannel) or not channel:
+            raise ValueError(
+                f"Channel: {channel_id} is not a valid text channel. Please provide a valid text channel id."
+            )
+        webhook = await self.get_webhook(channel.id)
+        if webhook:
+            message = await webhook.send(
+                content=content,
+                avatar_url=avatar_url,
+                username=username,
+                wait=True,
+                **kwargs,
+            )
+        else:
+            message = await channel.send(content, **kwargs)
+        return UpdateableMessageWrapper(message)
+
+    async def send_loading(self, channel_id: int) -> UpdateableMessageWrapper:
+        if not self.loading_message:
+            self.loading_message = "...thinking..."
+        if isinstance(self.loading_message, str):
+            loading_message = self.loading_message
+        else:
+            loading_message = random.choice(self.loading_message)
+        return await self.send_custom(
+            channel_id, loading_message, self.avatar_url, self.username
+        )
+
+    async def send(self, channel_id: int, content: str, **kwargs) -> UpdateableMessageWrapper:
+        return await self.send_custom(
+            channel_id, content, self.avatar_url, self.username, **kwargs
+        )
 
 class Agent:
     def __init__(
@@ -100,10 +186,13 @@ class Agent:
             username=self.name,
             loading_message=loading_message,
         )
-        self.ranker = Ranker()
+        self.ranker = None
 
     def add_examples(self, examples: list):
         self.examples.update(set(examples))
+
+    def add_ranker(self, ranker):
+        self.ranker = ranker
 
     def add_example(self, example: str):
         self.examples.add(example)
@@ -173,7 +262,7 @@ class AgentRouter:
 
         examples = await agent.rerank_examples(conversation[-120:])
         facts = await agent.rerank_facts(conversation[-120:])
-        
+
         reply = await self.dialogue_generator(
             name=agent.name,
             description=agent.description,
