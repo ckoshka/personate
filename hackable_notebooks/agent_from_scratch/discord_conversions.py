@@ -259,9 +259,12 @@ class AgentRouter:
 
         conversation = conversation.replace(f"{AGENT_PREFIX}{agent.name}", "")
         conversation = conversation.replace(f"{AGENT_PREFIX}{agent.name.lower()}", "")
-
-        examples = await agent.rerank_examples(conversation[-120:])
-        facts = await agent.rerank_facts(conversation[-120:])
+        if agent.ranker:
+            examples = await agent.rerank_examples(conversation[-120:])
+            facts = await agent.rerank_facts(conversation[-120:])
+        else:
+            examples = None
+            facts = None
 
         reply = await self.dialogue_generator(
             name=agent.name,
