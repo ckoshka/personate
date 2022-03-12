@@ -42,10 +42,12 @@ class Agent:
         agent_dir: str,
         json_path: Optional[str] = None,
         no_webhooks: bool = False,
+        adventures: bool = False,
         **kwargs: dict,
     ) -> None:
         self.asyn = Asynchronise()
         self.swarm = Swarm()
+        self.adventures = adventures
         self.agent_dir = agent_dir
         if not os.path.exists(f"{self.agent_dir}"):
             os.mkdir(f"{self.agent_dir}")
@@ -289,7 +291,7 @@ class Agent:
                 from personate.meta.inbuilt_commands import make_agent_modifier
                 self.modifier = make_agent_modifier(self.bot, self, self.agent_dir)
                 logger.debug(f"{self.name} registered inbuilt commands.")
-            if not self.improv_generator:
+            if not self.improv_generator and self.adventures:
                 from personate.meta.improv_scenes import ImprovGenerator
                 self.improv_generator = ImprovGenerator(self)
                 logger.debug(f"{self.name} registered improv generator.")
