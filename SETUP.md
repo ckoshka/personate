@@ -102,7 +102,7 @@ Or be an extremely cool person and add support for other options. I only have su
     * https://rapidapi.com/microsoft-azure-org-microsoft-cognitive-services/api/microsoft-translator-text/
     * https://rapidapi.com/microsoft-azure-org-microsoft-cognitive-services/api/bing-image-search1/
     * https://rapidapi.com/microsoft-azure-org-microsoft-cognitive-services/api/microsoft-computer-vision3/
-* Alternatively, you could just make your own custom Translator subclass and use that with whatever service you want (see Overview.md).
+* Alternatively, you could just make your own custom Translator subclass and use that with whatever service you want (see LAYOUT.md).
 
 ---
 
@@ -168,3 +168,5 @@ In the meantime, to test whether everything works, try this:
     ]
 }
 ```
+
+Important: if you ping your bot directly, then Discord goes and tells Pycord that the message says "@2984783438" instead of "@Swarm", and as a result, your Agent won't see it. So you need to just type in "@Swarm", no ping, just the string. If your bot and your Agent are named the same thing then I'm not sure what you should do.
