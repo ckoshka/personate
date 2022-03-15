@@ -1,5 +1,7 @@
 Setting up this library from scratch will probably take you a good half-hour, mostly waiting for stuff to be installed. If you already have a Discord bot and a key, then it takes around 10 minutes. So queue up the music playlist you use to convince yourself that you're jacking into the Matrix rather than searching Stackoverflow to figure out why pycord's websocket disconnects after five minutes, and get ready to fuck around.
 
+* **Important note:** if you want to set up an Agent in a repl.it notebook, Torch is a massive library and will make your container error out on memory. You may want to wait until I have the minimal-dependency tinified version of Personate up and running, or use a VPS (servercheap is cheaper than Replit and offers 30 GB SSD, haven't tried them yet so take my recommendaion with a grain of salt)
+
 (The good thing is, once it's all set up, you can just write a half-assed agent.json file in ten minutes and be able to instantly talk to it. And it will be Surprisingly Good.)
 
 *Here's the quick summary:*
