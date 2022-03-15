@@ -172,3 +172,5 @@ In the meantime, to test whether everything works, try this:
 ```
 
 Important: if you ping your bot directly, then Discord goes and tells Pycord that the message says "@2984783438" instead of "@Swarm", and as a result, your Agent won't see it. So you need to just type in "@Swarm", no ping, just the string. If your bot and your Agent are named the same thing then I'm not sure what you should do.
+
+If you want to have an extended conversation, just use the reply button instead of pinging - otherwise your Agent won't be able to see the conversation history.
