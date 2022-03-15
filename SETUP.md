@@ -10,7 +10,26 @@ Setting up this library from scratch will probably take you a good half-hour, mo
 
 # Setup
 
-## 1. Install this repo and its dependencies 🛠️
+## 1. Install C/C++ build dependencies
+Using your package manager of choice, ensure that cmake, build-essential, and pkg-config are installed
+
+### MacOS
+```bash
+brew install cmake pkg-config
+```
+
+### Debian and Ubuntu
+```bash
+sudo apt-get install cmake build-essential pkg-config
+```
+
+### RHEL
+```
+sudo yum install cmake build-essential pkg-config
+```
+
+
+## 2. Install this repo and its dependencies 🛠️
 ```bash
 python3 -m venv mybotvenv
 source mybotvenv/bin/activate
