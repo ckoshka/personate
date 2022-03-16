@@ -5,8 +5,10 @@
 import random
 import regex as re
 import discord
+import json
 import asyncio
 from typing import Callable, Dict, Optional, Union, List, Set
+import inspect
 
 AGENT_PREFIX = "&"
 
@@ -168,18 +170,22 @@ class Agent:
         self,
         bot: discord.Bot,
         name: str,
-        avatar_url: str,
-        description: str,
+        avatar: str,
+        introduction: str,
         is_ai: bool = False,
         loading_message: str = "...",
         **kwargs
     ):
         self.name = name
-        self.description = description
-        self.avatar_url = avatar_url
+        self.description = introduction
+        self.avatar_url = avatar
         self.is_ai = is_ai
         self.facts = set()
+        self.response_type = None
+        self.annotation = None
         self.examples = set()
+        self.messages_cache: dict = {}
+        self.post_translators: List[Callable] = []
         self.face = Face(
             bot=bot,
             avatar_url=self.avatar_url,
@@ -187,6 +193,29 @@ class Agent:
             loading_message=loading_message,
         )
         self.ranker = None
+
+    @classmethod
+    def from_json(cls, filename: str, bot: discord.Bot) -> "Agent":
+        with open(filename, "r") as f:
+            data = json.load(f)
+        agent = cls(**data, is_ai=True, bot=bot)
+        agent.examples = set()
+        for example in data["examples"]:
+            try:
+                agent_dialogue = example.pop("agent")
+                user = list(example.keys())[0]
+                final_example = f"""<{user}> {example[user]}\n<{agent.name}> {agent_dialogue}"""
+                print(final_example)
+                agent.add_example(final_example)
+            except:
+                pass
+        return agent
+
+    def set_response_type(self, response_type: str):
+        self.response_type = response_type
+
+    def set_annotation(self, annotation: str):
+        self.annotation = annotation
 
     def add_examples(self, examples: list):
         self.examples.update(set(examples))
@@ -203,10 +232,28 @@ class Agent:
     def add_fact(self, fact: str):
         self.facts.add(fact)
 
-    def facts_as_str(self, facts) -> str:
+    def add_post_translator(self, translator: Callable):
+        self.post_translators.append(translator)
+
+    async def translate(self, response: str):
+        original_response = response
+        for translator in self.post_translators:
+            if inspect.iscoroutinefunction(translator):
+                response = await translator(response)
+            else:
+                loop = asyncio.get_event_loop()
+                response = await loop.run_in_executor(None, translator, response)
+        self.messages_cache[response] = original_response
+        return response
+
+    def facts_as_str(self, facts) -> Optional[str]:
+        if not facts:
+            return None
         return "- " + "\n- ".join(facts)
 
     async def rerank_examples(self, query: str, max_chars: int = 710) -> list[str]:
+        if not self.ranker:
+            return []
         try:
             _top_results = await self.ranker.rank(texts=tuple(self.examples), query=query, top_k=len(self.examples), model=self.ranker.default_model)
         except Exception as e:
@@ -219,7 +266,9 @@ class Agent:
                 break
         return top_results
 
-    async def rerank_facts(self, query: str, max_chars: int = 180) -> str:
+    async def rerank_facts(self, query: str, max_chars: int = 180) -> Optional[str]:
+        if not self.ranker:
+            return ""
         try:
             _top_results = await self.ranker.rank(texts=tuple(self.facts), query=query, top_k=len(self.facts), model=self.ranker.default_model)
         except Exception as e:
@@ -273,7 +322,11 @@ class AgentRouter:
             is_ai=agent.is_ai,
             examples=examples,
             facts=facts,
+            response_type=agent.response_type,
+            annotation=agent.annotation,
         )
+
+        reply = await agent.translate(reply)
         
         await agent_message.update(content=reply, embed=embed_from_msg(msg))
 

@@ -87,7 +87,7 @@ class CommandRegister:
         # await msg.channel.send("Incorrect number of arguments.")
         # return
         # Check if there is a positional arg called "ctx"
-        if func.__code__.co_varnames[0] == "ctx":
+        if "ctx" in func.__code__.co_varnames:
             if not number_of_quotes == 0:
                 args: list[str] = ast.literal_eval(content)
                 logger.debug(f"Args: {args}")
