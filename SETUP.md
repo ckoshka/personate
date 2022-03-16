@@ -1,5 +1,7 @@
 Setting up this library from scratch will probably take you a good half-hour, mostly waiting for stuff to be installed. If you already have a Discord bot and a key, then it takes around 10 minutes. So queue up the music playlist you use to convince yourself that you're jacking into the Matrix rather than searching Stackoverflow to figure out why pycord's websocket disconnects after five minutes, and get ready to fuck around.
 
+* **Important note:** if you want to set up an Agent in a repl.it notebook, Torch is a massive library and will make your container error out on memory. You may want to wait until I have the minimal-dependency tinified version of Personate up and running, or use a VPS (servercheap is cheaper than Replit and offers 30 GB SSD, haven't tried them yet so take my recommendaion with a grain of salt)
+
 (The good thing is, once it's all set up, you can just write a half-assed agent.json file in ten minutes and be able to instantly talk to it. And it will be Surprisingly Good.)
 
 *Here's the quick summary:*
@@ -10,7 +12,26 @@ Setting up this library from scratch will probably take you a good half-hour, mo
 
 # Setup
 
-## 1. Install this repo and its dependencies 🛠️
+## 1. Install C/C++ build dependencies
+Using your package manager of choice, ensure that cmake, build-essential, and pkg-config are installed
+
+### MacOS
+```bash
+brew install cmake pkg-config
+```
+
+### Debian and Ubuntu
+```bash
+sudo apt-get install cmake build-essential pkg-config
+```
+
+### RHEL
+```
+sudo yum install cmake build-essential pkg-config
+```
+
+
+## 2. Install this repo and its dependencies 🛠️
 ```bash
 python3 -m venv mybotvenv
 source mybotvenv/bin/activate
@@ -83,7 +104,7 @@ Or be an extremely cool person and add support for other options. I only have su
     * https://rapidapi.com/microsoft-azure-org-microsoft-cognitive-services/api/microsoft-translator-text/
     * https://rapidapi.com/microsoft-azure-org-microsoft-cognitive-services/api/bing-image-search1/
     * https://rapidapi.com/microsoft-azure-org-microsoft-cognitive-services/api/microsoft-computer-vision3/
-* Alternatively, you could just make your own custom Translator subclass and use that with whatever service you want (see Overview.md).
+* Alternatively, you could just make your own custom Translator subclass and use that with whatever service you want (see LAYOUT.md).
 
 ---
 
@@ -149,3 +170,7 @@ In the meantime, to test whether everything works, try this:
     ]
 }
 ```
+
+Important: if you ping your bot directly, then Discord goes and tells Pycord that the message says "@2984783438" instead of "@Swarm", and as a result, your Agent won't see it. So you need to just type in "@Swarm", no ping, just the string. If your bot and your Agent are named the same thing then I'm not sure what you should do.
+
+If you want to have an extended conversation, just use the reply button instead of pinging - otherwise your Agent won't be able to see the conversation history.
