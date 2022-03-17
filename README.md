@@ -7,9 +7,31 @@
 
 # The big questions
 
-## Give me the buzzwords, please?
+## What does this do?
 
-Okay. This is a high-level library that turns large language models into helpful, non-toxic, well-informed, and semi-autonomous chatbots with long-term memories.
+You take SentenceTransformers and AI21 and get a chatbot that can:
+
+- ✅ - learn to call your Python functions with a single docstring and a ``@use`` decorator
+- ✅ - seamlessly integrate the results of those functions into conversations
+- ✅ - read entire knowledge-bases consisting of thousands of books, and use them to answer questions about anything you want, no matter how obscure
+- ✅ - store long-term memories and coherent personalities
+- ✅ - and best of all, hold uncannily high-quality, coherent conversations
+- ✅ - while deftly handling hate speech, adversarial inputs, and sensitive topics
+    - **NOTE:** there are built-in handlers for these (see ``Cinnamon.json`` for an example) but you will want to handle them differently from me, for your particular use-case. If you're just using it with friends, permitting adversarial inputs is funny.
+
+## Okay I don't believe you, show me the demo
+
+![Cinnamon](https://i.ibb.co/w71rY21/Screen-Shot-2022-03-17-at-9-23-20-PM.png)
+
+Here are some demos of personate-*micro*:
+* https://personate.glossandra.repl.co/personas/SWARM
+* https://personate.glossandra.repl.co/personas/Revmira
+* https://personate.glossandra.repl.co/personas/Cinnamon
+* https://personate.glossandra.repl.co/personas/Liliang
+
+Check out [the repo](https://github.com/ckoshka/personate_micro) for more details. 
+
+Note the *micro*. personate-micro runs on Replit containers, which means it's limited to under 740MB of space, has no semantic search capabilities, and has zero filtering for toxicity. The prompts are robust enough that they still work weirdly well, though. It's not a good demo for the main library, but the websites (in my unbiased opinion) are gorgeous-looking and I'm still trying to set a server up locally so this is the best I have right now.
 
 ## Why does this exist?
 
@@ -42,7 +64,9 @@ Here are some things that take around 30 minutes to do in Personate, provided yo
 | Any Python function or API with docstrings | a personal assistant that can choose and call those APIs with valid arguments, then tell you what the results were in natural language |
 | A biography of Alan Turing + Wikiquotes | a factually-consistent resurrection of Alan Turing that talks in the exact same style but uses your custom Discord emojis to express tone and emotion |
 
-Note that right now, I've only implemented an interface with Discord, but the underlying message-passing system is something you can extend to any platform you like.
+Note that right now, I've ~~only implemented an interface with Discord~~ (**NOPE: personate-micro is platform-independent and works anywhere**), but the underlying message-passing system is something you can extend to any platform you like.
+
+--------
 
 # The practical questions
 
@@ -56,7 +80,7 @@ pip3 install git+https://github.com/ckoshka/personate
 
 ## How do I write a good config.json file?
 
-That is sorta hard. But try [TIPS.md](https://github.com/ckoshka/personate/blob/master/TIPS.md), and be ready to experiment a lot.
+If you plan on sticking to the defaults, easily. For some prompt-defaults, you can stick in an advertisement for an IKEA chair and it'll still work. It doesn't matter. But if you plan on doing heavy customisation, try [TIPS.md](https://github.com/ckoshka/personate/blob/master/TIPS.md), and be ready to experiment a lot.
 
 ## How do I do stuff in it?
 
@@ -68,9 +92,6 @@ I will add a Discord link here later once I'm done setting things up. In the mea
 
 * You should add types to everything. If your linter can't tell what type a thing is when you hover over it, then you should add some type annotations.
 * Your variable names should be straightforward and transparent enough for Copilot to understand what you're doing. Copilot is like a very smart cat, and if you can make a cat understand your code then that's a good sign. I love cats.
-
-I am guilty of not doing some of these things sometimes, if you see any transgressions then you can also make a PR.
-
 # The little questions
 
 ## Should I use this in production?
