@@ -195,7 +195,7 @@ class Agent:
             doc = Document.deserialise(filename)
         if not directory:
             directory = self.agent_dir + "/knowledge"
-        elif is_url:
+        if is_url:
             doc = Document.from_url_or_file(
                 source=filename,
                 embedding_model=self.ranker.default_model,
